@@ -12,7 +12,7 @@ function sgc_customers_page() {
                     </div>
                     <nav class="nav-bar">
                         <ul>
-                            <li><a href="admin.php?page=sgc-plugin">Inicio</a></li>
+                            <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
                             <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
@@ -53,11 +53,12 @@ function sgc_customers_page() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Usuario</th>
-                                    <th>Correo Electrónico</th>
-                                    <th>IP</th>
-                                    <th>Banner</th>
-                                    <th>Clics</th>
+                                    <th>Nombre de la empresa</th>
+                                    <th>Nombre del cliente</th>
+                                    <th>Correo electrónico</th>
+                                    <th>Dirección</th>
+                                    <th>Activo</th>
+                                    <th>Tipo de paquete</th>
                                 </tr>
                             </thead>
                             <tbody>

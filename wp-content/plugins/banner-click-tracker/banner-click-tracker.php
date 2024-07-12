@@ -10,6 +10,7 @@
 include(plugin_dir_path(__FILE__) . 'clicks.php');
 include(plugin_dir_path(__FILE__) . 'customers.php');
 include(plugin_dir_path(__FILE__) . 'reports.php');
+include(plugin_dir_path(__FILE__) . 'home.php');
 
 // Registrar el menú de administración
 function sgc_register_menu_page() {
@@ -17,7 +18,23 @@ function sgc_register_menu_page() {
         'SGC Plugin', 'SGC', 'manage_options', 'sgc-plugin', 'sgc_display_admin_page', 'dashicons-chart-line', 6
     );
     add_submenu_page(
+        'sgc-home',
+        'Inicio',
+        'Inicio',
+        'manage_options',
+        'sgc-home',
+        'sgc_home_page'
+    );
+    add_submenu_page(
+        'sgc-home',
+        'Banners',
+        'Banners',
+        'manage_options',
         'sgc-plugin',
+        'sgc_display_admin_page'
+    );
+    add_submenu_page(
+        'sgc-home',
         'Clicks',
         'Clicks',
         'manage_options',
@@ -25,7 +42,7 @@ function sgc_register_menu_page() {
         'sgc_clicks_page'
     );
     add_submenu_page(
-        'sgc-plugin',
+        'sgc-home',
         'Clientes',
         'Clientes',
         'manage_options',
@@ -33,7 +50,7 @@ function sgc_register_menu_page() {
         'sgc_customers_page'
     );
     add_submenu_page(
-        'sgc-plugin',
+        'sgc-home',
         'Reportes',
         'Reportes',
         'manage_options',
@@ -56,7 +73,7 @@ function sgc_display_admin_page() {
                     </div>
                     <nav class="nav-bar">
                         <ul>
-                            <li><a href="admin.php?page=sgc-plugin">Inicio</a></li>
+                        <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
                             <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
@@ -97,11 +114,11 @@ function sgc_display_admin_page() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Usuario</th>
-                                    <th>Correo Electrónico</th>
-                                    <th>IP</th>
-                                    <th>Banner</th>
-                                    <th>Clics</th>
+                                    <th>Nombre del banner</th>
+                                    <th>Localización</th>
+                                    <th>Fecha</th>
+                                    <th>Total de clics</th>
+                                    <th>Total de usuarios</th>
                                 </tr>
                             </thead>
                             <tbody>

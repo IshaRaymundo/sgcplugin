@@ -13,7 +13,7 @@ function sgc_clicks_page() {
                     </div>
                     <nav class="nav-bar">
                         <ul>
-                            <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
                             <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
@@ -54,11 +54,11 @@ function sgc_clicks_page() {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Usuario</th>
-                                    <th>Correo Electrónico</th>
-                                    <th>IP</th>
-                                    <th>Banner</th>
-                                    <th>Clics</th>
+                                    <th>Nombre de usuario</th>
+                                    <th>Dirección ip</th>
+                                    <th>Dispositivo</th>
+                                    <th>Ciudad</th>
+                                    <th>Navegador</th>
                                 </tr>
                             </thead>
                             <tbody>
