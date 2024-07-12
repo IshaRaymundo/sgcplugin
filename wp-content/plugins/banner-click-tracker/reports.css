@@ -1,0 +1,75 @@
+#sgc-reports {
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: #3c80f6;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.buttons button {
+    background-color: #6c6fef;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buttons .excel-btn {
+    background-color: #28a745;
+}
+
+.buttons .pdf-btn {
+    background-color: #dc3545;
+}
+
+.buttons .whatsapp-btn {
+    background-color: #25d366;
+}
+
+.buttons .email-btn {
+    background-color: #ff6347;
+}
+
+.buttons .back-btn {
+    background-color: #808080;
+}
+
+.buttons button:hover {
+    background-color: #4b59d4;
+}
+
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.chart {
+    width: 45%;
+    text-align: center;
+}
+
+.chart h2 {
+    margin-bottom: 10px;
+}
+
+.chart canvas {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
