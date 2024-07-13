@@ -53,8 +53,7 @@ function sgc_clicks_page() {
                         <table id="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Nombre de usuario</th>
+                                    <th>#</th>
                                     <th>Dirección ip</th>
                                     <th>Dispositivo</th>
                                     <th>Ciudad</th>

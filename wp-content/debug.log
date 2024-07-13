@@ -1,0 +1,55 @@
+[13-Jul-2024 10:02:38 UTC] Received AJAX request
+[13-Jul-2024 10:02:38 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0
+    [browser] => 
+    [click_time] => 2024-07-13 10:02:38
+)
+
+[13-Jul-2024 10:02:38 UTC] Data inserted successfully
+[13-Jul-2024 10:05:49 UTC] Received AJAX request
+[13-Jul-2024 10:05:49 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0
+    [browser] => 
+    [click_time] => 2024-07-13 10:05:49
+)
+
+[13-Jul-2024 10:05:49 UTC] Data inserted successfully
+[13-Jul-2024 10:20:48 UTC] Received AJAX request
+[13-Jul-2024 10:20:48 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0
+    [browser] => 
+    [click_time] => 2024-07-13 10:20:48
+)
+
+[13-Jul-2024 10:20:48 UTC] Data inserted successfully
+[13-Jul-2024 10:35:38 UTC] Received AJAX request
+[13-Jul-2024 10:35:38 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0
+    [browser] => 
+    [click_time] => 2024-07-13 10:35:38
+)
+
+[13-Jul-2024 10:35:38 UTC] Data inserted successfully
+[13-Jul-2024 11:13:57 UTC] Received AJAX request
+[13-Jul-2024 11:13:57 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    [browser] => 
+    [click_time] => 2024-07-13 11:13:57
+)
+
+[13-Jul-2024 11:13:57 UTC] Data inserted successfully

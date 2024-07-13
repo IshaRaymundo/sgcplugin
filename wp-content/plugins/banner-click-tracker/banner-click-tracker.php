@@ -73,7 +73,7 @@ function sgc_display_admin_page() {
                     </div>
                     <nav class="nav-bar">
                         <ul>
-                        <li><a href="admin.php?page=sgc-home">Inicio</a></li>
+                            <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
                             <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
@@ -145,3 +145,93 @@ function sgc_enqueue_scripts($hook_suffix) {
     }
 }
 add_action('admin_enqueue_scripts', 'sgc_enqueue_scripts');
+
+// Registrar el shortcode
+function register_click_shortcode() {
+    add_shortcode('banner_click', 'banner_click_function');
+}
+add_action('init', 'register_click_shortcode');
+
+function banner_click_function($atts) {
+    $atts = shortcode_atts(
+        array(
+            'url' => '',
+            'image' => '',
+        ),
+        $atts,
+        'banner_click'
+    );
+
+    return '<a href="' . esc_url($atts['url']) . '" onclick="registerClick(event, \'' . esc_url($atts['url']) . '\')">
+                <img src="' . esc_url($atts['image']) . '" alt="Banner">
+            </a>';
+}
+
+// Enqueue el script JavaScript
+function enqueue_click_script() {
+    wp_enqueue_script('click-script', plugins_url('/js/click-script.js', __FILE__), array('jquery'), null, true);
+    wp_localize_script('click-script', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+}
+add_action('wp_enqueue_scripts', 'enqueue_click_script');
+
+// Manejar la solicitud AJAX
+function handle_click_ajax() {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'clicks';
+
+    $ip_address = $_SERVER['REMOTE_ADDR'];
+    $city = ''; // Necesitas usar una API de geolocalización para obtener la ciudad
+    $device = $_SERVER['HTTP_USER_AGENT'];
+    $browser = ''; // Puedes usar una librería para determinar el navegador a partir del user agent
+
+    $data = array(
+        'ip_address' => $ip_address,
+        'city' => $city,
+        'device' => $device,
+        'browser' => $browser,
+        'click_time' => current_time('mysql'),
+    );
+
+    // Para depuración
+    error_log('Received AJAX request'); // Verificación
+    error_log(print_r($data, true)); // Verificación
+
+    $result = $wpdb->insert($table_name, $data);
+
+    // Para depuración
+    if ($result === false) {
+        error_log('Error inserting data: ' . $wpdb->last_error); // Verificación
+    } else {
+        error_log('Data inserted successfully'); // Verificación
+    }
+
+    wp_die();
+}
+
+
+add_action('wp_ajax_nopriv_register_click', 'handle_click_ajax');
+add_action('wp_ajax_register_click', 'handle_click_ajax');
+
+// Crear la tabla en la base de datos al activar el plugin
+/*function create_clicks_table() {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'clicks';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        ip_address varchar(100) NOT NULL,
+        city varchar(100),
+        device text NOT NULL,
+        browser varchar(100),
+        click_time datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+}
+register_activation_hook(__FILE__, 'create_clicks_table');*/
+?>
