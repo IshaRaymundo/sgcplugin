@@ -14,7 +14,7 @@ function sgc_reports_page() {
                     <button class="pdf-btn">PDF</button>
                     <button class="whatsapp-btn">WhatsApp</button>
                     <button class="email-btn">Correo</button>
-                    <button class="back-btn" onclick="window.location.href='admin.php?page=sgc-plugin'">Regresar</button>
+                    <button class="back-btn" onclick="window.location.href='admin.php?page=sgc-home'">Regresar</button>
                 </div>
                 <div class="charts">
                     <div class="chart">

@@ -1,16 +1,16 @@
 <?php
-/**
- * Plugin Name: Banner Click Tracker
- * Description: Rastrea las interacciones de los usuarios con los banners.
- * Version: 1.0
- * Author: UT
- */
+/*
+Plugin Name: Banner Click Tracker
+Description: Rastrea las interacciones de los usuarios con los banners.
+Version: 1.0
+Author: UT
+*/
 
 // Incluir los archivos necesarios
 include(plugin_dir_path(__FILE__) . 'clicks.php');
 include(plugin_dir_path(__FILE__) . 'customers.php');
 include(plugin_dir_path(__FILE__) . 'reports.php');
-include(plugin_dir_path(__FILE__) . 'home.php');
+include(plugin_dir_path(__FILE__) . 'home.php'); 
 
 // Registrar el menú de administración
 function sgc_register_menu_page() {
@@ -18,7 +18,7 @@ function sgc_register_menu_page() {
         'SGC Plugin', 'SGC', 'manage_options', 'sgc-plugin', 'sgc_display_admin_page', 'dashicons-chart-line', 6
     );
     add_submenu_page(
-        'sgc-home',
+        'sgc-plugin',
         'Inicio',
         'Inicio',
         'manage_options',
@@ -26,7 +26,7 @@ function sgc_register_menu_page() {
         'sgc_home_page'
     );
     add_submenu_page(
-        'sgc-home',
+        'sgc-plugin',
         'Banners',
         'Banners',
         'manage_options',
@@ -34,7 +34,7 @@ function sgc_register_menu_page() {
         'sgc_display_admin_page'
     );
     add_submenu_page(
-        'sgc-home',
+        'sgc-plugin',
         'Clicks',
         'Clicks',
         'manage_options',
@@ -42,7 +42,7 @@ function sgc_register_menu_page() {
         'sgc_clicks_page'
     );
     add_submenu_page(
-        'sgc-home',
+        'sgc-plugin',
         'Clientes',
         'Clientes',
         'manage_options',
@@ -50,7 +50,7 @@ function sgc_register_menu_page() {
         'sgc_customers_page'
     );
     add_submenu_page(
-        'sgc-home',
+        'sgc-plugin',
         'Reportes',
         'Reportes',
         'manage_options',
@@ -137,9 +137,9 @@ function sgc_display_admin_page() {
     <?php
 }
 
-// Incluir los scripts necesarios para la página de administración principal y las páginas de clicks, clientes y reportes
+// Enqueue scripts para la página de administración principal y las páginas de clicks, clientes y reportes
 function sgc_enqueue_scripts($hook_suffix) {
-    if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-clicks' || $hook_suffix == 'sgc-plugin_page_sgc-customers' || $hook_suffix == 'sgc-plugin_page_sgc-reports') {
+    if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-clicks' || $hook_suffix == 'sgc-plugin_page_sgc-customers' || $hook_suffix == 'sgc-plugin_page_sgc-reports' || $hook_suffix == 'sgc-create-banner') {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
         wp_enqueue_script('sgc-admin-js', plugins_url('admin.js', __FILE__), array('jquery', 'chart-js'), null, true);
     }
@@ -152,6 +152,7 @@ function register_click_shortcode() {
 }
 add_action('init', 'register_click_shortcode');
 
+// Función para el shortcode de banner_click
 function banner_click_function($atts) {
     $atts = shortcode_atts(
         array(
@@ -208,13 +209,11 @@ function handle_click_ajax() {
 
     wp_die();
 }
-
-
 add_action('wp_ajax_nopriv_register_click', 'handle_click_ajax');
 add_action('wp_ajax_register_click', 'handle_click_ajax');
 
 // Crear la tabla en la base de datos al activar el plugin
-/*function create_clicks_table() {
+function create_clicks_table() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'clicks';
@@ -233,5 +232,5 @@ add_action('wp_ajax_register_click', 'handle_click_ajax');
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 }
-register_activation_hook(__FILE__, 'create_clicks_table');*/
-?>
+register_activation_hook(__FILE__, 'create_clicks_table');
+

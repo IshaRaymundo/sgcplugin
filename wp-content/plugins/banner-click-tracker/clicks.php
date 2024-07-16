@@ -1,5 +1,4 @@
 <?php
-
 // Función para mostrar la página de clicks
 function sgc_clicks_page() {
     ?>
@@ -13,7 +12,7 @@ function sgc_clicks_page() {
                     </div>
                     <nav class="nav-bar">
                         <ul>
-                        <li><a href="admin.php?page=sgc-home">Inicio</a></li>
+                            <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
                             <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
@@ -83,3 +82,4 @@ function sgc_clicks_enqueue_scripts($hook_suffix) {
     }
 }
 add_action('admin_enqueue_scripts', 'sgc_clicks_enqueue_scripts');
+?>

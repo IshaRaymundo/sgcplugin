@@ -15,7 +15,7 @@ function sgc_home_page() {
                             <li><a href="admin.php?page=sgc-home">Inicio</a></li>
                             <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
                             <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
-                            <li><a href="admin.php?page=sgc-customers">Usuarios</a></li>
+                            <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
                             <li><a href="admin.php?page=sgc-reports">Reportes</a></li>
                         </ul>
                     </nav>
