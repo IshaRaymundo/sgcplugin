@@ -68,7 +68,7 @@ function sgc_display_admin_page() {
             <div class="container">
                 <header class="header">
                     <div class="logo">
-                        <img src="path/to/logo.png" alt="Logo">
+                        <!-- <img src="path/to/logo.png" alt="Logo"> -->
                         <h1>Gestión de Banners</h1>
                     </div>
                     <nav class="nav-bar">
@@ -91,6 +91,7 @@ function sgc_display_admin_page() {
                             </div>
                         </section>
                         <aside class="filter-container">
+                        <button id="addBannerButton" class="add-banner-button">Agregar banner</button>
                             <h2>Filtrar Búsqueda</h2>
                             <form id="filters">
                                 <label for="date-range">Seleccione un rango de fechas:</label>
@@ -130,12 +131,29 @@ function sgc_display_admin_page() {
             </div>
         </div>
     </div>
+    <div id="addBannerModal" class="modal"> 
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Agregar nuevo banner</h2>
+            <form id="addBannerForm">
+                <label for="bannerName">Nombre del banner:</label>
+                <input type="text" id="bannerName" name="bannerName">
+                
+                <label for="bannerLocation">Localización del banner:</label>
+                <input type="text" id="bannerLocation" name="bannerLocation">
+                
+                <button type="submit">Agregar</button>
+            </form>
+        </div>
+    </div>
     <style>
         /* Incluye el CSS aquí o en un archivo separado */
         <?php include(plugin_dir_path(__FILE__) . 'styles.css'); ?>
+        
     </style>
     <?php
 }
+
 
 // Enqueue scripts para la página de administración principal y las páginas de clicks, clientes y reportes
 function sgc_enqueue_scripts($hook_suffix) {

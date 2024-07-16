@@ -1045,3 +1045,4 @@ Stack trace:
 #2 C:\xampp\htdocs\sgcplugin\wp-admin\admin.php(259): do_action('admin_page_sgc-...')
 #3 {main}
   thrown in C:\xampp\htdocs\sgcplugin\wp-includes\class-wp-hook.php on line 324
+[16-Jul-2024 17:59:01 UTC] PHP Parse error:  Unclosed '{' on line 64 in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 251
