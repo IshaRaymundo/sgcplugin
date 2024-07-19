@@ -1046,3 +1046,45 @@ Stack trace:
 #3 {main}
   thrown in C:\xampp\htdocs\sgcplugin\wp-includes\class-wp-hook.php on line 324
 [16-Jul-2024 17:59:01 UTC] PHP Parse error:  Unclosed '{' on line 64 in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 251
+[18-Jul-2024 20:27:54 UTC] Automatic updates starting...
+[18-Jul-2024 20:27:55 UTC]   Automatic theme updates starting...
+[18-Jul-2024 20:27:55 UTC]   Automatic theme updates complete.
+[18-Jul-2024 20:27:55 UTC] Automatic updates complete.
+[18-Jul-2024 21:23:59 UTC] Automatic updates starting...
+[18-Jul-2024 21:24:00 UTC]   Automatic theme updates starting...
+[18-Jul-2024 21:24:00 UTC]   Automatic theme updates complete.
+[18-Jul-2024 21:24:00 UTC] Automatic updates complete.
+[18-Jul-2024 21:40:48 UTC] PHP Parse error:  Unterminated comment starting line 234 in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 234
+[19-Jul-2024 01:35:53 UTC] Received AJAX request
+[19-Jul-2024 01:35:53 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    [browser] => 
+    [click_time] => 2024-07-19 01:35:53
+)
+
+[19-Jul-2024 01:35:53 UTC] Data inserted successfully
+[19-Jul-2024 01:36:45 UTC] Received AJAX request
+[19-Jul-2024 01:36:45 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    [browser] => 
+    [click_time] => 2024-07-19 01:36:45
+)
+
+[19-Jul-2024 01:36:45 UTC] Data inserted successfully
+[19-Jul-2024 03:11:50 UTC] Received AJAX request
+[19-Jul-2024 03:11:50 UTC] Array
+(
+    [ip_address] => ::1
+    [city] => 
+    [device] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+    [browser] => 
+    [click_time] => 2024-07-19 03:11:50
+)
+
+[19-Jul-2024 03:11:50 UTC] Data inserted successfully

@@ -1,4 +1,13 @@
 <?php
+
+function sgc_get_clicks_data() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'clicks';
+    $query = "SELECT * FROM $table_name";
+    $results = $wpdb->get_results($query);
+    return $results;
+}
+
 // Función para mostrar la página de clicks
 function sgc_clicks_page() {
     ?>
@@ -60,7 +69,22 @@ function sgc_clicks_page() {
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Datos llenados por JavaScript -->
+                                <?php
+                                    $clicks_data = sgc_get_clicks_data();
+                                    if (!empty($clicks_data)) {
+                                        foreach ($clicks_data as $index => $click) {
+                                            echo "<tr>";
+                                            echo "<td>" . ($index + 1) . "</td>";
+                                            echo "<td>" . esc_html($click->ip_address) . "</td>";
+                                            echo "<td>" . esc_html($click->device) . "</td>";
+                                            echo "<td>" . esc_html($click->city) . "</td>";
+                                            echo "<td>" . esc_html($click->browser) . "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='5'>No hay datos disponibles.</td></tr>";
+                                    }
+                                ?>
                             </tbody>
                         </table>
                     </section>
