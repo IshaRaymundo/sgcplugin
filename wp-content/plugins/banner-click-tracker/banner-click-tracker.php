@@ -10,7 +10,16 @@ Author: UT
 include(plugin_dir_path(__FILE__) . 'clicks.php');
 include(plugin_dir_path(__FILE__) . 'customers.php');
 include(plugin_dir_path(__FILE__) . 'reports.php');
-include(plugin_dir_path(__FILE__) . 'home.php'); 
+include(plugin_dir_path(__FILE__) . 'home.php');
+
+if (file_exists(plugin_dir_path(__FILE__) . 'vendor/autoload.php')) {
+    require plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+} else {
+    error_log('Error: No se encontró el archivo autoload.php de Composer');
+    return; // Detener la ejecución del plugin si no se encuentra autoload.php
+}
+
+use Jenssegers\Agent\Agent;
 
 // Registrar el menú de administración
 function sgc_register_menu_page() {
@@ -68,7 +77,6 @@ function sgc_display_admin_page() {
             <div class="container">
                 <header class="header">
                     <div class="logo">
-                        <!-- <img src="path/to/logo.png" alt="Logo"> -->
                         <h1>Gestión de Banners</h1>
                     </div>
                     <nav class="nav-bar">
@@ -154,7 +162,6 @@ function sgc_display_admin_page() {
     <?php
 }
 
-
 // Enqueue scripts para la página de administración principal y las páginas de clicks, clientes y reportes
 function sgc_enqueue_scripts($hook_suffix) {
     if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-clicks' || $hook_suffix == 'sgc-plugin_page_sgc-customers' || $hook_suffix == 'sgc-plugin_page_sgc-reports' || $hook_suffix == 'sgc-create-banner') {
@@ -200,9 +207,22 @@ function handle_click_ajax() {
     $table_name = $wpdb->prefix . 'clicks';
 
     $ip_address = $_SERVER['REMOTE_ADDR'];
-    $city = ''; // Necesitas usar una API de geolocalización para obtener la ciudad
+
+    // Usar la API de geolocalización de ipinfo.io para obtener la ciudad
+    $response = wp_remote_get("http://ipinfo.io/{$ip_address}/json");
+    if (is_wp_error($response)) {
+        $city = 'Unknown';
+        error_log('Error fetching IP info: ' . $response->get_error_message());
+    } else {
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        $city = isset($data['city']) ? $data['city'] : 'Unknown';
+    }
+
     $device = $_SERVER['HTTP_USER_AGENT'];
-    $browser = ''; // Puedes usar una librería para determinar el navegador a partir del user agent
+    $agent = new Agent();
+    $agent->setUserAgent($device);
+    $browser = $agent->browser();
 
     $data = array(
         'ip_address' => $ip_address,
@@ -212,17 +232,17 @@ function handle_click_ajax() {
         'click_time' => current_time('mysql'),
     );
 
-    // Para depuración
-    error_log('Received AJAX request'); // Verificación
-    error_log(print_r($data, true)); // Verificación
+    error_log('Received AJAX request');
+    error_log(print_r($data, true));
 
     $result = $wpdb->insert($table_name, $data);
 
-    // Para depuración
     if ($result === false) {
-        error_log('Error inserting data: ' . $wpdb->last_error); // Verificación
+        error_log('Error inserting data: ' . $wpdb->last_error);
+        wp_send_json_error(array('message' => 'Error inserting data: ' . $wpdb->last_error));
     } else {
-        error_log('Data inserted successfully'); // Verificación
+        error_log('Data inserted successfully');
+        wp_send_json_success(array('message' => 'Data inserted successfully'));
     }
 
     wp_die();
@@ -252,3 +272,4 @@ function create_clicks_table() {
 }
 register_activation_hook(__FILE__, 'create_clicks_table');
 
+?>

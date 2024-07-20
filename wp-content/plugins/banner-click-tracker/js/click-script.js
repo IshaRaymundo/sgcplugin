@@ -12,7 +12,11 @@ function registerClick(event, url) {
             url: url
         },
         success: function(response) {
-            console.log('AJAX request successful'); // Verificación
+            if (response.success) {
+                console.log('AJAX request successful', response.data); // Verificación
+            } else {
+                console.log('AJAX request failed', response.data); // Verificación
+            }
             window.location.href = url;
         },
         error: function(error) {
