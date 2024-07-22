@@ -84,24 +84,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-//modal para agregar clientes
-document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById("addCustomersModal");
-    var btn = document.getElementById("addCustomersButton");
-    var span = document.getElementsByClassName("close")[0];
-
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-});
 

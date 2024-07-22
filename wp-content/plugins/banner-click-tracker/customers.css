@@ -171,27 +171,8 @@ form button:hover {
     height: auto;
 }
 
-table {
-    border-collapse: separate;
-    border-spacing: 0 10px;
-}
-
-td {
-    background-color: #fff;
-    color: #000;
-}
-
-form button {
-    background-color: #6c5ce7;
-    color: #fff;
-    font-weight: bold;
-}
-
-form button:hover {
-    background-color: #5a47c5;
-}
-
-.add-customers-button {
+/* Estilos para el botón Agregar customer */
+#add-customer-btn {
     display: block;
     width: 100%;
     padding: 10px;
@@ -203,10 +184,10 @@ form button:hover {
     cursor: pointer;
 }
 
-.add-customers-button:hover {
+#add-customer-btn:hover {
     background-color: #5a47c5;
 }
-
+/* Estilos para el modal */
 .modal {
     display: none;
     position: fixed;
@@ -218,7 +199,6 @@ form button:hover {
     overflow: auto;
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.4);
-    padding-top: 60px;
 }
 
 .modal-content {
@@ -231,15 +211,15 @@ form button:hover {
     border-radius: 8px;
 }
 
-.close {
+.close-btn {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close-btn:hover,
+.close-btn:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
