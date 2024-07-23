@@ -15,7 +15,6 @@ function sgc_customers_page()
             <div class="container">
                 <header class="header">
                     <div class="logo">
-                        <img src="path/to/logo.png" alt="Logo">
                         <h1>Gestión de Clientes</h1>
                     </div>
                     <nav class="nav-bar">
@@ -34,9 +33,12 @@ function sgc_customers_page()
                             <h2>Seguimiento de clientes</h2>
                             <p>Obtén informes detallados sobre el seguimiento de clientes por medio de gráficos.</p>
                             <div id="chart">
-                                <canvas id="customersChart"></canvas>
+                                <canvas id="activityChart"></canvas>
+                                <canvas id="packageChart"></canvas>
                             </div>
                         </section>
+
+
                         <aside class="filter-container">
                             <button id="add-customer-btn">Agregar Cliente</button>
                             <h2>Filtrar Búsqueda</h2>
@@ -49,6 +51,9 @@ function sgc_customers_page()
                                 <input type="text" id="banner-name" name="banner-name">
 
                                 <label for="user-name">Nombre del cliente:</label>
+                                <input type="text" id="user-name" name="user-name">
+
+                                <label for="user-name">¿Está ctivo?:</label>
                                 <input type="text" id="user-name" name="user-name">
 
                                 <button type="submit">Filtrar</button>
@@ -255,13 +260,17 @@ function sgc_customers_page()
 }
 
 // Incluir los scripts necesarios para la página de clientes
-function sgc_customers_enqueue_scripts($hook_suffix) {
+function sgc_customers_enqueue_scripts($hook_suffix)
+{
     if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-customers') {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
         wp_enqueue_script('sgc-admin-js', plugins_url('admin.js', __FILE__), array('jquery', 'chart-js'), null, true);
-        wp_localize_script('sgc-admin-js', 'ajaxurl', admin_url('admin-ajax.php'));
+        wp_enqueue_script('sgc-customers-js', plugins_url('admin/customers.js', __FILE__), array('jquery', 'chart-js'), null, true);
+
+        wp_localize_script('sgc-customers-js', 'ajaxurl', admin_url('admin-ajax.php'));
     }
 }
 add_action('admin_enqueue_scripts', 'sgc_customers_enqueue_scripts');
+
 
 ?>

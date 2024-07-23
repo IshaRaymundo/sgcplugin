@@ -16,7 +16,6 @@ function sgc_clicks_page() {
             <div class="container">
                 <header class="header">
                     <div class="logo">
-                        <img src="path/to/logo.png" alt="Logo">
                         <h1>Gestión de Clicks</h1>
                     </div>
                     <nav class="nav-bar">
