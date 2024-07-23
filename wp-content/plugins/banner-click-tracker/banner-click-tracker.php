@@ -309,7 +309,7 @@ add_action('wp_ajax_nopriv_register_click', 'handle_click_ajax');
 add_action('wp_ajax_register_click', 'handle_click_ajax');
 
 // Crear la tabla en la base de datos al activar el plugin
-/*function create_clicks_table() {
+function create_clicks_table() {
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'clicks';
@@ -377,7 +377,7 @@ function sgc_create_customers_table() {
     dbDelta($sql);
 }
 
-register_activation_hook(__FILE__, 'sgc_create_customers_table');*/
+register_activation_hook(__FILE__, 'sgc_create_customers_table');
 
 // Crear la tabla wp_banners al activar el plugin
 function create_banners_table()
@@ -489,23 +489,17 @@ function sgc_get_customers()
 }
 
 //Leer Cliente
-function sgc_get_customer()
-{
+function sgc_get_customer() {
     global $wpdb;
+    $customer_id = intval($_GET['customer_id']); // Asegúrate de sanitizar el ID
+    
+    if (!$customer_id) {
+        wp_send_json_error('Invalid customer ID');
+    }
 
-    // Verifica el ID del cliente
-    $customer_id = intval($_GET['customer_id']);
     $table_name = $wpdb->prefix . 'customers';
-
-    // Consulta para obtener los datos del cliente
-    $customer = $wpdb->get_row($wpdb->prepare("
-        SELECT c.id, c.customer_name, c.company_name, c.email, c.phone_number, c.address, c.is_active, c.package_type_id, pt.package_name
-        FROM $table_name c
-        INNER JOIN {$wpdb->prefix}package_type pt ON c.package_type_id = pt.id
-        WHERE c.id = %d
-    ", $customer_id), ARRAY_A);
-
-    // Verifica si se encontraron datos
+    $customer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $customer_id), ARRAY_A);
+    
     if ($customer) {
         wp_send_json_success($customer);
     } else {

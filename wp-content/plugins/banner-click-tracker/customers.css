@@ -171,6 +171,56 @@ form button:hover {
     height: auto;
 }
 
+/* Estilos para los botones de acción en la tabla */
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.update-customer-btn{
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+/* Estilo para el botón de eliminar */
+.btn-delete {
+    background-color: #e74c3c; /* Rojo para eliminar */
+    color: #fff;
+    border: 1px solid #c0392b; /* Color más oscuro para el borde */
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+    border-color: #a93226;
+}
+
+/* Estilo para el botón de actualizar */
+.update-customer-btn {
+    background-color: #3498db; /* Azul para editar */
+    color: #fff;
+    border: 1px solid #2980b9; /* Color más oscuro para el borde */
+    margin-top: 10px;
+}
+
+.update-customer-btn:hover {
+    background-color: #2980b9;
+    border-color: #1f6f9f;
+}
+
 /* Estilos para el botón Agregar customer */
 #add-customer-btn {
     display: block;
