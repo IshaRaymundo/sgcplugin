@@ -1088,3 +1088,51 @@ Stack trace:
 )
 
 [19-Jul-2024 03:11:50 UTC] Data inserted successfully
+[24-Jul-2024 13:46:06 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:19
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 19
+[24-Jul-2024 13:46:22 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:19
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 19
+[24-Jul-2024 13:48:22 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:99
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 99
+[24-Jul-2024 13:48:30 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:19
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 19
+[24-Jul-2024 13:50:37 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:100
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 100
+[24-Jul-2024 13:51:07 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "_FILE_" in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php:100
+Stack trace:
+#0 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(324): sgc_clicks_page('')
+#1 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters('', Array)
+#2 C:\xampp\htdocs\ut\plugin_sgc\wp-includes\plugin.php(517): WP_Hook->do_action(Array)
+#3 C:\xampp\htdocs\ut\plugin_sgc\wp-admin\admin.php(259): do_action('sgc_page_sgc-cl...')
+#4 {main}
+  thrown in C:\xampp\htdocs\ut\plugin_sgc\wp-content\plugins\banner-click-tracker\clicks.php on line 100
