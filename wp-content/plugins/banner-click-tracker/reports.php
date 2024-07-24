@@ -10,7 +10,7 @@ function sgc_reports_page() {
                 </header>
                 <div class="buttons">
                     <button class="filter-btn">Filtrar</button>
-                    <button class="excel-btn">Excel</button>
+                    <button class="excel-btn" id="export-excel-btn">Excel</button>
                     <button class="pdf-btn">PDF</button>
                     <button class="whatsapp-btn">WhatsApp</button>
                     <button class="email-btn">Correo</button>
@@ -40,6 +40,13 @@ function sgc_reports_page() {
     <style>
         <?php include(plugin_dir_path(__FILE__) . 'reports.css'); ?>
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('export-excel-btn').addEventListener('click', function() {
+                window.location.href = ajaxurl + '?action=export_to_excel';
+            });
+        });
+    </script>
     <?php
 }
 
