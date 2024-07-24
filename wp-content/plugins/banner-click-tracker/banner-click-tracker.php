@@ -726,5 +726,41 @@ function sgc_banner_shortcode($atts)
 }
 add_shortcode('sgc_banner', 'sgc_banner_shortcode');
 
+//exportacion de excel
+function export_to_excel() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'clicks';
+    $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+
+    if (empty($results)) {
+        wp_die('No hay datos para exportar.');
+    }
+
+    // Establecer los encabezados para la descarga del archivo Excel
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment;filename="report.xls"');
+    header('Cache-Control: max-age=0');
+
+    // Crear el contenido del archivo Excel
+    $output = fopen('php://output', 'w');
+
+    // Escribir los encabezados de las columnas
+    $headers = array_keys($results[0]);
+    fputcsv($output, $headers, "\t");
+
+    // Escribir los datos
+    foreach ($results as $row) {
+        fputcsv($output, $row, "\t");
+    }
+
+    fclose($output);
+    exit;
+}
+
+add_action('wp_ajax_export_to_excel', 'export_to_excel');
 
 ?>
