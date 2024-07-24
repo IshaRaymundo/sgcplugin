@@ -53,7 +53,7 @@ function sgc_customers_page()
                                 <label for="user-name">Nombre del cliente:</label>
                                 <input type="text" id="user-name" name="user-name">
 
-                                <label for="user-name">¿Está ctivo?:</label>
+                                <label for="user-name">¿Está activo?</label>
                                 <input type="text" id="user-name" name="user-name">
 
                                 <button type="submit">Filtrar</button>

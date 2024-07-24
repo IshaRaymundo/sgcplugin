@@ -129,8 +129,8 @@ function sgc_display_admin_page()
                         </aside>
                     </div>
                     <section class="table-container">
-                        <h2>Tabla de clics</h2>
-                        <p>Obtén informes detallados sobre el seguimiento de clics por medio de tablas.</p>
+                        <h2>Tabla de Banners</h2>
+                        <p>Obtén informes detallados sobre los banners.</p>
                         <table id="data-table">
                             <thead>
                                 <tr>
@@ -139,17 +139,22 @@ function sgc_display_admin_page()
                                     <th>Imagen</th>
                                     <th>URL</th>
                                     <th>Localización</th>
+                                    <th>Cliente</th>
                                     <th>Total de clics</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($banners as $banner) { ?>
+                                <?php
+                                $banners = sgc_get_banners_with_customers();
+
+                                foreach ($banners as $banner) { ?>
                                     <tr>
                                         <td><?php echo esc_html($banner['id']); ?></td>
                                         <td><?php echo esc_html($banner['banner_name']); ?></td>
                                         <td><img src="<?php echo esc_url($banner['banner_image']); ?>" alt="<?php echo esc_html($banner['banner_name']); ?>" style="max-width: 100px;"></td>
                                         <td><a href="<?php echo esc_url($banner['banner_url']); ?>" target="_blank"><?php echo esc_html($banner['banner_url']); ?></a></td>
                                         <td><?php echo esc_html($banner['location_on_site']); ?></td>
+                                        <td><?php echo esc_html($banner['customer_name']); ?></td>
                                         <td><?php echo esc_html($banner['total_clicks']); ?></td>
                                     </tr>
                                 <?php } ?>
@@ -167,21 +172,21 @@ function sgc_display_admin_page()
             <form id="addBannerForm" method="post" action="<?php echo admin_url('admin-post.php'); ?>">
                 <input type="hidden" name="action" value="add_banner">
 
-                <label for="bannerName">Nombre del banner:</label>
-                <input type="text" id="bannerName" name="bannerName">
+                <label for="banner_name">Nombre del banner:</label>
+                <input type="text" id="banner_name" name="banner_name">
 
-                <label for="bannerImage">Imagen del banner (URL):</label>
-                <input type="text" id="bannerImage" name="bannerImage">
+                <label for="banner_image">Imagen del banner (URL):</label>
+                <input type="text" id="banner_image" name="banner_image">
 
-                <label for="bannerUrl">URL del banner:</label>
-                <input type="text" id="bannerUrl" name="bannerUrl">
+                <label for="banner_url">URL del banner:</label>
+                <input type="text" id="banner_url" name="banner_url">
 
-                <label for="bannerLocation">Localización del banner:</label>
-                <input type="text" id="bannerLocation" name="bannerLocation">
+                <label for="location_on_site">Localización del banner:</label>
+                <input type="text" id="location_on_site" name="location_on_site">
+
                 <label for="bannerCustomer">Seleccionar Cliente:</label>
                 <select id="bannerCustomer" name="bannerCustomer">
                     <?php
-                    // Obtener clientes desde la base de datos
                     global $wpdb;
                     $customers = $wpdb->get_results("SELECT id, customer_name FROM {$wpdb->prefix}customers", ARRAY_A);
                     foreach ($customers as $customer) {
@@ -194,6 +199,7 @@ function sgc_display_admin_page()
             </form>
         </div>
     </div>
+
     <style>
         /* Incluye el CSS aquí o en un archivo separado */
         <?php include(plugin_dir_path(__FILE__) . 'styles.css'); ?>
@@ -309,7 +315,8 @@ add_action('wp_ajax_nopriv_register_click', 'handle_click_ajax');
 add_action('wp_ajax_register_click', 'handle_click_ajax');
 
 // Crear la tabla en la base de datos al activar el plugin
-function create_clicks_table() {
+function create_clicks_table()
+{
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'clicks';
@@ -355,12 +362,13 @@ function create_package_type_table()
 register_activation_hook(__FILE__, 'create_package_type_table');
 
 // Crear la tabla wp_customers al activar el plugin
-function sgc_create_customers_table() {
+function sgc_create_customers_table()
+{
     global $wpdb;
     $table_name = $wpdb->prefix . 'customers';
-    
+
     $charset_collate = $wpdb->get_charset_collate();
-    
+
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         company_name varchar(255) NOT NULL,
@@ -372,7 +380,7 @@ function sgc_create_customers_table() {
         package_type_id mediumint(9) NOT NULL,
         PRIMARY KEY (id)
     ) $charset_collate;";
-    
+
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 }
@@ -489,17 +497,18 @@ function sgc_get_customers()
 }
 
 //Leer Cliente
-function sgc_get_customer() {
+function sgc_get_customer()
+{
     global $wpdb;
     $customer_id = intval($_GET['customer_id']); // Asegúrate de sanitizar el ID
-    
+
     if (!$customer_id) {
         wp_send_json_error('Invalid customer ID');
     }
 
     $table_name = $wpdb->prefix . 'customers';
     $customer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $customer_id), ARRAY_A);
-    
+
     if ($customer) {
         wp_send_json_success($customer);
     } else {
@@ -591,27 +600,70 @@ add_action('wp_ajax_nopriv_get_chart_data', 'sgc_get_chart_data');
 
 //Agregar Banners
 
+// Manejar el envío del formulario para agregar un banner
 function sgc_add_banner()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'banners';
+    $table_banners = $wpdb->prefix . 'banners';
+    $table_customers_banners = $wpdb->prefix . 'customer_banners';
 
     $banner_name = sanitize_text_field($_POST['banner_name']);
-    $banner_image = esc_url($_POST['banner_image']);
-    $banner_url = esc_url($_POST['banner_url']);
+    $banner_image = esc_url_raw($_POST['banner_image']);
+    $banner_url = esc_url_raw($_POST['banner_url']);
     $location_on_site = sanitize_text_field($_POST['location_on_site']);
+    $customer_id = intval($_POST['bannerCustomer']);  // Obtener el ID del cliente
 
-    $wpdb->insert($table_name, array(
+    // Insertar el banner en la base de datos
+    $wpdb->insert($table_banners, array(
         'banner_name' => $banner_name,
         'banner_image' => $banner_image,
         'banner_url' => $banner_url,
-        'location_on_site' => $location_on_site
+        'location_on_site' => $location_on_site,
+        'total_clicks' => 0
     ));
 
-    wp_redirect(admin_url('admin.php?page=sgc-banners'));
+    $banner_id = $wpdb->insert_id;
+
+    // Relacionar el banner con el cliente seleccionado
+    if ($customer_id > 0) {
+        $wpdb->insert($table_customers_banners, array(
+            'banner_id' => $banner_id,
+            'customer_id' => $customer_id
+        ));
+    }
+
+    wp_redirect(admin_url('admin.php?page=sgc-plugin'));
     exit;
 }
 add_action('admin_post_add_banner', 'sgc_add_banner');
+
+
+function sgc_get_banners_with_customers()
+{
+    global $wpdb;
+    $table_banners = $wpdb->prefix . 'banners';
+    $table_customers = $wpdb->prefix . 'customers';
+    $table_customers_banners = $wpdb->prefix . 'customer_banners';
+
+    $query = "
+        SELECT 
+            b.id, 
+            b.banner_name, 
+            b.banner_image, 
+            b.banner_url, 
+            b.location_on_site, 
+            b.total_clicks, 
+            c.customer_name 
+        FROM $table_banners b
+        INNER JOIN $table_customers_banners cb ON b.id = cb.banner_id
+        INNER JOIN $table_customers c ON cb.customer_id = c.id
+    ";
+
+    $results = $wpdb->get_results($query, ARRAY_A);
+
+    return $results;
+}
+
 
 //Actualizar el total de clics
 
