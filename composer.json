@@ -1,0 +1,8 @@
+{
+<<<<<<< HEAD
+=======
+    "require": {
+        "phpoffice/phpspreadsheet": "^2.1"
+    }
+>>>>>>> ae34226dc7d821260e9698762ca55989d84ee5ba
+}
