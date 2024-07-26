@@ -274,3 +274,20 @@ form button:hover {
     text-decoration: none;
     cursor: pointer;
 }
+
+#chart {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+#activityChart, #packageChart {
+    width: 45%;
+    height: 300px;
+}
+
+@media (max-width: 768px) {
+    #activityChart, #packageChart {
+        width: 100%;
+    }
+}

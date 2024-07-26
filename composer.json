@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
+=======
     "require": {
-        "phpoffice/phpspreadsheet": "^2.1"
+        "phpoffice/phpspreadsheet": "^2.2",
+        "dompdf/dompdf": "^3.0"
     }
+>>>>>>> ae34226dc7d821260e9698762ca55989d84ee5ba
 }
