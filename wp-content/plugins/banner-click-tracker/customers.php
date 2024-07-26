@@ -13,21 +13,21 @@ function sgc_customers_page()
     <div class="wrap">
         <div id="sgc-dashboard">
             <div class="container">
-                <header class="header">
-                    <div class="logo">
-                        <img src="path/to/logo.png" alt="Logo">
-                        <h1>Gestión de Clientes</h1>
-                    </div>
-                    <nav class="nav-bar">
-                        <ul>
-                            <li><a href="admin.php?page=sgc-home">Inicio</a></li>
-                            <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
-                            <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
-                            <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
-                            <li><a href="admin.php?page=sgc-reports">Reportes</a></li>
-                        </ul>
-                    </nav>
-                </header>
+            <header class="header">
+          <div class="logo">
+            <img src="<?php echo plugins_url('img/logo-sgc.png', __FILE__); ?>" alt="Logo">
+          </div>
+          <h1>Gestión de Clicks</h1>
+          <nav class="nav-bar">
+            <ul>
+              <li><a href="admin.php?page=sgc-home">Inicio</a></li>
+              <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
+              <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
+              <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
+              <li><a href="admin.php?page=sgc-reports">Reportes</a></li>
+            </ul>
+          </nav>
+        </header>
                 <main class="main-content">
                     <div class="chart-and-filter">
                         <section class="chart-container">
@@ -67,7 +67,7 @@ function sgc_customers_page()
                                     <th>Teléfono</th>
                                     <th>Dirección</th>
                                     <th>Activo</th>
-                                    <th>Tipo de paquete</th> <!-- Asegúrate de que esta columna esté en el HTML -->
+                                    <th>Tipo de paquete</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -83,7 +83,7 @@ function sgc_customers_page()
                     <td>{$customer['phone_number']}</td>
                     <td>{$customer['address']}</td>
                     <td>" . ($customer['is_active'] ? 'Sí' : 'No') . "</td>
-                    <td>{$customer['package_name']}</td> <!-- Muestra el nombre del paquete aquí -->
+                    <td>{$customer['package_name']}</td>
                     <td>
                         <a href='" . admin_url('admin-post.php?action=delete_customer&id=' . $customer['id']) ."' class='btn btn-delete' >Eliminar</a>
                         <a href='#' class='update-customer-btn' data-id='{$customer['id']}'>Editar</a>
@@ -181,8 +181,59 @@ function sgc_customers_page()
         <?php include(plugin_dir_path(__FILE__) . 'customers.css'); ?>
     </style>
 
+    <!-- La sig linea se incluye la librería de chart.js p ver la grafica -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+    // Función para obtener los datos de los clientes
+    function fetchCustomerData() {
+        return fetch(`${ajaxurl}?action=get_customers_data`)
+            .then(response => response.json());
+    }
+
+    // se crea el gráfico de Chart.js
+function createChart(data) {
+    const ctx = document.getElementById('customersChart').getContext('2d');
+    const packageNames = [...new Set(data.map(customer => customer.package_name))];
+    const chartData = packageNames.map(package => {
+        return data.filter(customer => customer.package_name === package).length;
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: packageNames,
+            datasets: [{
+                label: 'Número de Clientes por Tipo de Paquete',
+                data: chartData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        // Configura el formato de los ticks del eje Y
+                        callback: function(value) {
+                            // Muestra solo números enteros
+                            return Number.isInteger(value) ? value : '';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+    // Obtener los datos y crear el gráfico
+    fetchCustomerData().then(data => {
+        createChart(data);
+    });
+
     // Modal Add
     var modalAdd = document.getElementById('modal-add');
     var addButton = document.getElementById('add-customer-btn');
@@ -255,6 +306,7 @@ function sgc_customers_page()
     }
 });
 
+
     </script>
 <?php
 }
@@ -268,5 +320,14 @@ function sgc_customers_enqueue_scripts($hook_suffix) {
     }
 }
 add_action('admin_enqueue_scripts', 'sgc_customers_enqueue_scripts');
+
+// Función para obtener los datos de los clientes en formato JSON
+function sgc_get_customers_data() {
+    global $wpdb;
+    $results = $wpdb->get_results("SELECT company_name, customer_name, package_name FROM wp_customers JOIN wp_package_type ON wp_customers.package_type_id = wp_package_type.id", ARRAY_A);
+    wp_send_json($results);
+}
+add_action('wp_ajax_get_customers_data', 'sgc_get_customers_data');
+add_action('wp_ajax_nopriv_get_customers_data', 'sgc_get_customers_data');
 
 ?>
