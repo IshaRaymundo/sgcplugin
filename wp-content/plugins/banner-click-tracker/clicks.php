@@ -1,17 +1,37 @@
 <?php
 
-function sgc_get_clicks_data()
+function sgc_get_clicks_data($date_start = null, $date_end = null, $device = null, $browser = null)
 {
     global $wpdb;
     $table_name = $wpdb->prefix . 'clicks';
-    $query = "SELECT * FROM $table_name";
+
+    $query = "SELECT * FROM $table_name WHERE 1=1";
+
+    if ($date_start) {
+        $query .= $wpdb->prepare(" AND click_time >= %s", $date_start);
+    }
+    if ($date_end) {
+        $query .= $wpdb->prepare(" AND click_time <= %s", $date_end . ' 23:59:59');
+    }
+    if ($device) {
+        $query .= $wpdb->prepare(" AND device LIKE %s", '%' . $wpdb->esc_like($device) . '%');
+    }
+    if ($browser) {
+        $query .= $wpdb->prepare(" AND browser LIKE %s", '%' . $wpdb->esc_like($browser) . '%');
+    }
+
     $results = $wpdb->get_results($query);
     return $results;
 }
 
 function sgc_clicks_page()
 {
-    $clicks_data = sgc_get_clicks_data();
+    $date_start = isset($_GET['date-start']) ? sanitize_text_field($_GET['date-start']) : null;
+    $date_end = isset($_GET['date-end']) ? sanitize_text_field($_GET['date-end']) : null;
+    $device = isset($_GET['device']) ? sanitize_text_field($_GET['device']) : null;
+    $browser = isset($_GET['browser']) ? sanitize_text_field($_GET['browser']) : null;
+
+    $clicks_data = sgc_get_clicks_data($date_start, $date_end, $device, $browser);
 ?>
     <div class="wrap">
         <div id="sgc-dashboard">
@@ -42,16 +62,17 @@ function sgc_clicks_page()
                         </section>
                         <aside class="filter-container">
                             <h2>Filtrar Búsqueda</h2>
-                            <form id="filters">
+                            <form id="filters" method="GET" action="">
+                                <input type="hidden" name="page" value="sgc-clicks">
                                 <label for="date-range">Seleccione un rango de fechas:</label>
-                                <input type="date" id="date-start" name="date-start">
-                                <input type="date" id="date-end" name="date-end">
+                                <input type="date" id="date-start" name="date-start" value="<?php echo esc_attr($date_start); ?>">
+                                <input type="date" id="date-end" name="date-end" value="<?php echo esc_attr($date_end); ?>">
 
-                                <label for="banner-name">Nombre del banner:</label>
-                                <input type="text" id="banner-name" name="banner-name">
+                                <label for="device">Dispositivo:</label>
+                                <input type="text" id="device" name="device" value="<?php echo esc_attr($device); ?>">
 
-                                <label for="user-name">Nombre del usuario:</label>
-                                <input type="text" id="user-name" name="user-name">
+                                <label for="browser">Navegador:</label>
+                                <input type="text" id="browser" name="browser" value="<?php echo esc_attr($browser); ?>">
 
                                 <button type="submit">Filtrar</button>
                             </form>
@@ -95,7 +116,6 @@ function sgc_clicks_page()
                     </section>
                 </main>
             </div>
-
         </div>
     </div>
     <style>
