@@ -122,68 +122,72 @@ function sgc_clicks_page()
         <?php include(plugin_dir_path(__FILE__) . 'clicks.css'); ?>
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var clicksData = <?php echo json_encode($clicks_data); ?>;
+document.addEventListener('DOMContentLoaded', function() {
+    var clicksData = <?php echo json_encode($clicks_data); ?>;
 
-            var ctx = document.getElementById('clicksChart').getContext('2d');
+    var ctx = document.getElementById('clicksChart').getContext('2d');
 
-            // Transformar los datos PHP a formato Chart.js
-            var transformedData = clicksData.map(function(click, index) {
-                return {
-                    x: index + 1,
-                    y: 1,
-                    device: click.device,
-                    browser: click.browser,
-                    ip_address: click.ip_address
-                };
-            });
+    // Transformar los datos PHP a formato Chart.js
+    var transformedData = clicksData.reduce((acc, click) => {
+        var date = new Date(click.click_time).toISOString().split('T')[0]; // Usar solo la fecha (YYYY-MM-DD)
+        if (!acc[date]) {
+            acc[date] = 0;
+        }
+        acc[date]++;
+        return acc;
+    }, {});
 
-            var clicksChart = new Chart(ctx, {
-                type: 'bubble',
-                data: {
-                    datasets: [{
-                        label: 'Clics',
-                        data: transformedData,
-                        backgroundColor: 'rgba(106, 90, 205, 0.5)',
-                        borderColor: 'rgba(106, 90, 205, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    var data = context.raw;
-                                    return 'Dispositivo: ' + data.device + ', Navegador: ' + data.browser + ', IP: ' + data.ip_address;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: 'ID'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Clics'
-                            }
+    var labels = Object.keys(transformedData);
+    var data = Object.values(transformedData);
+
+    var clicksChart = new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Número de Clics',
+                data: data,
+                backgroundColor: 'rgba(106, 90, 205, 0.5)',
+                borderColor: 'rgba(106, 90, 205, 1)',
+                borderWidth: 1,
+                pointRadius: 8 
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Fecha: ' + context.label + ', Clics: ' + context.raw;
                         }
                     }
                 }
-            });
-        });
-    </script>
-<?php
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Número de Clics'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+
+    <?php
 }
 
 function sgc_clicks_enqueue_scripts($hook_suffix)
