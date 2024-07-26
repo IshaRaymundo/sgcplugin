@@ -243,3 +243,45 @@ form button:hover {
     text-decoration: none;
     cursor: pointer;
 }
+
+.sgc-banners {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sgc-banner {
+    margin: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.sgc-banner img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilo para el botón de eliminar */
+.btn-delete {
+    background-color: #e74c3c; /* Rojo para eliminar */
+    color: #fff;
+    border: 1px solid #c0392b; /* Color más oscuro para el borde */
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+    border-color: #a93226;
+}
+
+/* Estilo para el botón de actualizar */
+.update-customer-btn {
+    background-color: #3498db; /* Azul para editar */
+    color: #fff;
+    border: 1px solid #2980b9; /* Color más oscuro para el borde */
+    margin-top: 10px;
+}
+
+.update-customer-btn:hover {
+    background-color: #2980b9;
+    border-color: #1f6f9f;
+}

@@ -1,21 +1,10 @@
 jQuery(document).ready(function ($) {
     // Datos simulados para la gráfica y la tabla
-    var clickData = [
-        { id: 1, usuario: 'Usuario 1', correo: 'admin1@test.com', ip: '255.255.255.0', banner: 'Banner 1', clics: 23 },
-        { id: 2, usuario: 'Usuario 2', correo: 'admin2@test.com', ip: '255.255.255.1', banner: 'Banner 2', clics: 43 },
-        { id: 3, usuario: 'Usuario 3', correo: 'admin3@test.com', ip: '197.145.123', banner: 'Banner 3', clics: 54 },
-        { id: 4, usuario: 'Usuario 4', correo: 'admin4@test.com', ip: '192.167.0.8', banner: 'Banner 4', clics: 22 },
-        { id: 5, usuario: 'Usuario 5', correo: 'admin5@test.com', ip: '192.156.10.0', banner: 'Banner 5', clics: 12 }
-    ];
+   
 
-    // Inicializar la tabla con los datos
-    var tableBody = $('#data-table tbody');
-    clickData.forEach(function (row) {
-        tableBody.append('<tr><td>' + row.id + '</td><td>' + row.usuario + '</td><td>' + row.correo + '</td><td>' + row.ip + '</td><td>' + row.banner + '</td><td>' + row.clics + '</td></tr>');
-    });
 
     // Inicializar la gráfica con los datos
-    var ctx = document.getElementById('clicksChart').getContext('2d');
+    var ctx = document.getElementById('').getContext('2d');
     var clicksChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -83,6 +72,48 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+// modal para editar banners
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById("editBannerModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+});
+
+function openEditBannerModal(bannerId) {
+    // Realizar una petición AJAX para obtener los datos del banner
+    jQuery.ajax({
+        url: ajaxurl,
+        type: 'POST',
+        data: {
+            action: 'get_banner_details',
+            banner_id: bannerId
+        },
+        success: function(response) {
+            var banner = JSON.parse(response);
+            jQuery('#editBannerForm input[name="banner_id"]').val(banner.id);
+            jQuery('#editBannerForm input[name="banner_name"]').val(banner.banner_name);
+            jQuery('#editBannerForm input[name="banner_image"]').val(banner.banner_image);
+            jQuery('#editBannerForm input[name="banner_url"]').val(banner.banner_url);
+            jQuery('#editBannerForm input[name="location_on_site"]').val(banner.location_on_site);
+            jQuery('#editBannerForm select[name="page_id"]').val(banner.page_id);
+            jQuery('#editBannerForm select[name="bannerCustomer"]').val(banner.customer_id);
+
+            document.getElementById("editBannerModal").style.display = "block";
+        }
+    });
+}
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
 

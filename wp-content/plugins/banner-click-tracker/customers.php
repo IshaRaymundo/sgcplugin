@@ -39,6 +39,7 @@ function sgc_customers_page()
                         </section>
 
 
+
                         <aside class="filter-container">
                             <button id="add-customer-btn">Agregar Cliente</button>
                             <h2>Filtrar Búsqueda</h2>
@@ -90,7 +91,7 @@ function sgc_customers_page()
                     <td>" . ($customer['is_active'] ? 'Sí' : 'No') . "</td>
                     <td>{$customer['package_name']}</td> <!-- Muestra el nombre del paquete aquí -->
                     <td>
-                        <a href='" . admin_url('admin-post.php?action=delete_customer&id=' . $customer['id']) ."' class='btn btn-delete' >Eliminar</a>
+                        <a href='" . admin_url('admin-post.php?action=delete_customer&id=' . $customer['id']) . "' class='btn btn-delete' >Eliminar</a>
                         <a href='#' class='update-customer-btn' data-id='{$customer['id']}'>Editar</a>
                     </td>
                 </tr>";
@@ -188,78 +189,77 @@ function sgc_customers_page()
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Modal Add
-    var modalAdd = document.getElementById('modal-add');
-    var addButton = document.getElementById('add-customer-btn');
-    var closeButtons = document.querySelectorAll('.close-btn[data-modal="modal-add"]');
+            // Modal Add
+            var modalAdd = document.getElementById('modal-add');
+            var addButton = document.getElementById('add-customer-btn');
+            var closeButtons = document.querySelectorAll('.close-btn[data-modal="modal-add"]');
 
-    addButton.onclick = function() {
-        modalAdd.style.display = 'block';
-    }
+            addButton.onclick = function() {
+                modalAdd.style.display = 'block';
+            }
 
-    closeButtons.forEach(function(button) {
-        button.onclick = function() {
-            modalAdd.style.display = 'none';
-        }
-    });
+            closeButtons.forEach(function(button) {
+                button.onclick = function() {
+                    modalAdd.style.display = 'none';
+                }
+            });
 
-    // Modal Update
-    var modalUpdate = document.getElementById('modal-update');
-    var closeUpdateButtons = document.querySelectorAll('.close-btn[data-modal="modal-update"]');
+            // Modal Update
+            var modalUpdate = document.getElementById('modal-update');
+            var closeUpdateButtons = document.querySelectorAll('.close-btn[data-modal="modal-update"]');
 
-    // Event delegation for update buttons
-    document.querySelector('#data-table').addEventListener('click', function(event) {
-        if (event.target.classList.contains('update-customer-btn')) {
-            var customerId = event.target.getAttribute('data-id');
+            // Event delegation for update buttons
+            document.querySelector('#data-table').addEventListener('click', function(event) {
+                if (event.target.classList.contains('update-customer-btn')) {
+                    var customerId = event.target.getAttribute('data-id');
 
-            // Fetch customer data via AJAX
-            fetch(`${ajaxurl}?action=get_customer&customer_id=${customerId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Populate fields
-                        document.getElementById('update-customer-id').value = data.data.id;
-                        document.getElementById('update-customer-title').value = data.data.customer_name;
-                        document.getElementById('update-customer-company').value = data.data.company_name;
-                        document.getElementById('update-customer-email').value = data.data.email;
-                        document.getElementById('update-customer-telephone').value = data.data.phone_number;
-                        document.getElementById('update-customer-address').value = data.data.address;
-                        document.getElementById('update-customer-active').checked = data.data.is_active;
+                    // Fetch customer data via AJAX
+                    fetch(`${ajaxurl}?action=get_customer&customer_id=${customerId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Populate fields
+                                document.getElementById('update-customer-id').value = data.data.id;
+                                document.getElementById('update-customer-title').value = data.data.customer_name;
+                                document.getElementById('update-customer-company').value = data.data.company_name;
+                                document.getElementById('update-customer-email').value = data.data.email;
+                                document.getElementById('update-customer-telephone').value = data.data.phone_number;
+                                document.getElementById('update-customer-address').value = data.data.address;
+                                document.getElementById('update-customer-active').checked = data.data.is_active;
 
-                        // Set selected package type
-                        var packageSelect = document.getElementById('update-customer-subscription');
-                        for (var i = 0; i < packageSelect.options.length; i++) {
-                            if (packageSelect.options[i].value == data.data.package_type_id) {
-                                packageSelect.options[i].selected = true;
-                                break;
+                                // Set selected package type
+                                var packageSelect = document.getElementById('update-customer-subscription');
+                                for (var i = 0; i < packageSelect.options.length; i++) {
+                                    if (packageSelect.options[i].value == data.data.package_type_id) {
+                                        packageSelect.options[i].selected = true;
+                                        break;
+                                    }
+                                }
+
+                                modalUpdate.style.display = 'block';
+                            } else {
+                                console.error('Error fetching customer data:', data.data);
                             }
-                        }
+                        })
+                        .catch(error => console.error('Error fetching customer data:', error));
+                }
+            });
 
-                        modalUpdate.style.display = 'block';
-                    } else {
-                        console.error('Error fetching customer data:', data.data);
-                    }
-                })
-                .catch(error => console.error('Error fetching customer data:', error));
-        }
-    });
+            closeUpdateButtons.forEach(function(button) {
+                button.onclick = function() {
+                    modalUpdate.style.display = 'none';
+                }
+            });
 
-    closeUpdateButtons.forEach(function(button) {
-        button.onclick = function() {
-            modalUpdate.style.display = 'none';
-        }
-    });
-
-    window.onclick = function(event) {
-        if (event.target == modalAdd) {
-            modalAdd.style.display = 'none';
-        }
-        if (event.target == modalUpdate) {
-            modalUpdate.style.display = 'none';
-        }
-    }
-});
-
+            window.onclick = function(event) {
+                if (event.target == modalAdd) {
+                    modalAdd.style.display = 'none';
+                }
+                if (event.target == modalUpdate) {
+                    modalUpdate.style.display = 'none';
+                }
+            }
+        });
     </script>
 <?php
 }

@@ -1,7 +1,7 @@
 // js/click-script.js
-function registerClick(event, url) {
+function registerClick(event, url, bannerId) {
     event.preventDefault();
-    
+
     console.log('Click registered'); // Verificación
 
     jQuery.ajax({
@@ -9,7 +9,8 @@ function registerClick(event, url) {
         type: 'POST',
         data: {
             action: 'register_click',
-            url: url
+            url: url,
+            banner_id: bannerId // Asegúrate de que esto se envía correctamente
         },
         success: function(response) {
             if (response.success) {
@@ -19,8 +20,9 @@ function registerClick(event, url) {
             }
             window.location.href = url;
         },
-        error: function(error) {
+        error: function(xhr, status, error) {
             console.log('AJAX request failed', error); // Verificación
+            console.log('Response:', xhr.responseText); // Verificación
         }
     });
 }
