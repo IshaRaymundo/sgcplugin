@@ -6100,3 +6100,48 @@ Stack trace:
 
 [26-Jul-2024 10:24:22 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
 [26-Jul-2024 10:24:22 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:25:33 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:25:33 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:35:31 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:35:31 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:35:51 UTC] PHP Notice:  La función WP_Scripts::localize ha sido llamada <strong>de forma incorrecta</strong>. El parámetro <code>$l10n</code> debe ser un array. Para pasar datos arbitrarios a los scripts, usa en su lugar la función <code>wp_add_inline_script()</code>. Por favor, visita <a href="https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/">Depuración en WordPress</a> para más información. (Este mensaje se añadió en la versión 5.7.0.) in C:\xampp\htdocs\sgcplugin\wp-includes\functions.php on line 6085
+[26-Jul-2024 10:35:52 UTC] Array
+(
+    [0] => Array
+        (
+            [id] => 2
+            [banner_name] => ut banner
+            [banner_image] => https://i.ytimg.com/vi/JB0QLs7txA4/maxresdefault.jpg
+            [banner_url] => https://example.com/
+            [location_on_site] => Cuerpo
+            [total_clicks] => 0
+            [company_name] => UT Cancún
+            [page_name] => Banner
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [banner_name] => la salle
+            [banner_image] => https://i.ytimg.com/vi/48XxKS1uWU8/maxresdefault.jpg
+            [banner_url] => https://example.com/
+            [location_on_site] => Encabezado
+            [total_clicks] => 0
+            [company_name] => si
+            [page_name] => Página de ejemplo
+        )
+
+)
+
+[26-Jul-2024 10:38:03 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:38:03 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:40:04 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:40:04 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:42:05 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 10:42:05 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:48:01 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:48:01 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:48:04 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:48:04 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:50:19 UTC] PHP Warning:  include(C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
+[26-Jul-2024 20:50:19 UTC] PHP Warning:  include(): Failed opening 'C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker/customers-crud.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\sgcplugin\wp-content\plugins\banner-click-tracker\banner-click-tracker.php on line 12
