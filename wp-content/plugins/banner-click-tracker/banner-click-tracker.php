@@ -81,8 +81,40 @@ add_action('admin_menu', 'sgc_register_menu_page');
 function sgc_display_admin_page()
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'banners';
-    $banners = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+
+    // Obtener los filtros del formulario
+    $date_start = isset($_POST['date-start']) ? $_POST['date-start'] : '';
+    $date_end = isset($_POST['date-end']) ? $_POST['date-end'] : '';
+    $banner_name = isset($_POST['banner_name']) ? $_POST['banner_name'] : '';
+    $company_name = isset($_POST['company_name']) ? $_POST['company_name'] : '';
+
+    // Construir la consulta con los filtros
+    $query = "SELECT banners.*, customers.company_name, pages.post_title AS page_name
+              FROM {$wpdb->prefix}banners AS banners
+              LEFT JOIN {$wpdb->prefix}customer_banners AS customer_banners ON banners.id = customer_banners.banner_id
+              LEFT JOIN {$wpdb->prefix}customers AS customers ON customer_banners.customer_id = customers.id
+              LEFT JOIN {$wpdb->prefix}banners_pages AS banners_pages ON banners.id = banners_pages.banner_id
+              LEFT JOIN {$wpdb->prefix}posts AS pages ON banners_pages.page_id = pages.ID
+              WHERE 1=1";
+
+    if (!empty($date_start)) {
+        $query .= $wpdb->prepare(" AND banners.created_at >= %s", $date_start);
+    }
+
+    if (!empty($date_end)) {
+        $query .= $wpdb->prepare(" AND banners.created_at <= %s", $date_end);
+    }
+
+    if (!empty($banner_name)) {
+        $query .= $wpdb->prepare(" AND banners.banner_name LIKE %s", '%' . $wpdb->esc_like($banner_name) . '%');
+    }
+
+    if (!empty($company_name)) {
+        $query .= $wpdb->prepare(" AND customers.company_name LIKE %s", '%' . $wpdb->esc_like($company_name) . '%');
+    }
+
+    $banners = $wpdb->get_results($query, ARRAY_A);
+
 ?>
     <div class="wrap">
         <div id="sgc-dashboard">
@@ -104,8 +136,8 @@ function sgc_display_admin_page()
                 <main class="main-content">
                     <div class="chart-and-filter">
                         <section class="chart-container">
-                            <h2>Seguimiento de clics</h2>
-                            <p>Obtén informes detallados sobre el seguimiento de clics por medio de gráficos.</p>
+                            <h2>Seguimiento de banners</h2>
+                            <p>Obtén informes detallados sobre el seguimiento de banners por medio de gráficos.</p>
                             <div id="chart">
                                 <canvas id="packageChart"></canvas>
                             </div>
@@ -113,16 +145,16 @@ function sgc_display_admin_page()
                         <aside class="filter-container">
                             <button id="addBannerButton" class="add-banner-button">Agregar banner</button>
                             <h2>Filtrar Búsqueda</h2>
-                            <form id="filters">
+                            <form id="filters" method="POST" action="">
                                 <label for="date-range">Seleccione un rango de fechas:</label>
                                 <input type="date" id="date-start" name="date-start">
                                 <input type="date" id="date-end" name="date-end">
 
-                                <label for="banner-name">Nombre del banner:</label>
-                                <input type="text" id="banner-name" name="banner-name">
+                                <label for="banner_name">Nombre del banner:</label>
+                                <input type="text" id="banner_name" name="banner_name">
 
-                                <label for="user-name">Nombre del usuario:</label>
-                                <input type="text" id="user-name" name="user-name">
+                                <label for="company_name">Nombre del cliente:</label>
+                                <input type="text" id="company_name" name="company_name">
 
                                 <button type="submit">Filtrar</button>
                             </form>
@@ -147,7 +179,6 @@ function sgc_display_admin_page()
                             </thead>
                             <tbody>
                                 <?php
-                                $banners = sgc_get_banners_with_details();
                                 foreach ($banners as $banner) { ?>
                                     <tr>
                                         <td><?php echo esc_html($banner['id']); ?></td>
@@ -269,14 +300,13 @@ function sgc_display_admin_page()
             </form>
         </div>
     </div>
-
-
     <style>
         /* Incluye el CSS aquí o en un archivo separado */
         <?php include(plugin_dir_path(__FILE__) . 'styles.css'); ?>
     </style>
 <?php
 }
+
 
 // Enqueue scripts para la página de administración principal y las páginas de clicks, clientes y reportes
 function sgc_enqueue_scripts($hook_suffix)

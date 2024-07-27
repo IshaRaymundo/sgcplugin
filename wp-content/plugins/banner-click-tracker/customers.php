@@ -7,7 +7,7 @@ $package_types = $wpdb->get_results("SELECT id, package_name FROM wp_package_typ
 // Función para mostrar la página de customers
 function sgc_customers_page()
 {
-    global $wpdb, $package_types; // Asegúrate de que $package_types esté disponible
+    global $package_types; // Traemos la variable global al contexto de la función
 ?>
 
     <div class="wrap">
@@ -33,10 +33,10 @@ function sgc_customers_page()
                             <h2>Seguimiento de clientes</h2>
                             <p>Obtén informes detallados sobre el seguimiento de clientes por medio de gráficos.</p>
                             <div id="chart">
-                                <canvas id="activityChart"></canvas>
-                                <canvas id="packageChart"></canvas>
+                                <canvas id="customersChart"></canvas>
                             </div>
                         </section>
+
                         <aside class="filter-container">
                             <button id="add-customer-btn">Agregar Cliente</button>
                             <h2>Filtrar Búsqueda</h2>
@@ -185,74 +185,252 @@ function sgc_customers_page()
         <?php include(plugin_dir_path(__FILE__) . 'customers.css'); ?>
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Modal Add
             var modalAdd = document.getElementById('modal-add');
-            var addCustomerBtn = document.getElementById('add-customer-btn');
-            var closeAdd = modalAdd.querySelector('.close-btn[data-modal="modal-add"]');
+            var addButton = document.getElementById('add-customer-btn');
+            var closeButtons = document.querySelectorAll('.close-btn[data-modal="modal-add"]');
 
-            addCustomerBtn.onclick = function() {
+            addButton.onclick = function() {
                 modalAdd.style.display = 'block';
             }
 
-            closeAdd.onclick = function() {
-                modalAdd.style.display = 'none';
-            }
+            closeButtons.forEach(function(button) {
+                button.onclick = function() {
+                    modalAdd.style.display = 'none';
+                }
+            });
 
+            // Modal Update
+            var modalUpdate = document.getElementById('modal-update');
+            var closeUpdateButtons = document.querySelectorAll('.close-btn[data-modal="modal-update"]');
+
+            closeUpdateButtons.forEach(function(button) {
+                button.onclick = function() {
+                    modalUpdate.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.update-customer-btn').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    var customerId = this.getAttribute('data-id');
+
+                    fetch('<?php echo admin_url('admin-ajax.php?action=get_customer&customer_id='); ?>' + customerId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                var customer = data.data;
+                                document.getElementById('update-customer-id').value = customer.id;
+                                document.getElementById('update-customer-title').value = customer.customer_name;
+                                document.getElementById('update-customer-company').value = customer.company_name;
+                                document.getElementById('update-customer-email').value = customer.email;
+                                document.getElementById('update-customer-telephone').value = customer.phone_number;
+                                document.getElementById('update-customer-address').value = customer.address;
+                                document.getElementById('update-customer-active').checked = customer.is_active;
+                                document.getElementById('update-customer-subscription').value = customer.package_type_id;
+
+                                modalUpdate.style.display = 'block';
+                            } else {
+                                alert('Error al cargar los datos del cliente');
+                            }
+                        });
+                });
+            });
+
+            // Cerrar modal cuando se haga clic fuera del contenido
             window.onclick = function(event) {
                 if (event.target == modalAdd) {
                     modalAdd.style.display = 'none';
                 }
-            }
-
-            // Modal Update
-            var modalUpdate = document.getElementById('modal-update');
-            var updateCustomerBtns = document.querySelectorAll('.update-customer-btn');
-            var closeUpdate = modalUpdate.querySelector('.close-btn[data-modal="modal-update"]');
-
-            updateCustomerBtns.forEach(function(btn) {
-                btn.onclick = function() {
-                    var customerId = this.getAttribute('data-id');
-                    fetch('<?php echo admin_url('admin-ajax.php'); ?>?action=get_customer&id=' + customerId)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('update-customer-id').value = data.id;
-                            document.getElementById('update-customer-title').value = data.customer_name;
-                            document.getElementById('update-customer-company').value = data.company_name;
-                            document.getElementById('update-customer-email').value = data.email;
-                            document.getElementById('update-customer-telephone').value = data.phone_number;
-                            document.getElementById('update-customer-address').value = data.address;
-                            document.getElementById('update-customer-active').checked = data.is_active;
-                            document.getElementById('update-customer-subscription').value = data.package_type_id;
-                            modalUpdate.style.display = 'block';
-                        });
-                }
-            });
-
-            closeUpdate.onclick = function() {
-                modalUpdate.style.display = 'none';
-            }
-
-            window.onclick = function(event) {
                 if (event.target == modalUpdate) {
                     modalUpdate.style.display = 'none';
                 }
+            };
+
+            // Handle form submission for filtering
+            var filterForm = document.getElementById('filters');
+            filterForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevenir el comportamiento predeterminado del formulario
+
+                var formData = new FormData(filterForm);
+                var params = new URLSearchParams(formData).toString();
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '<?php echo admin_url('admin-ajax.php?action=filter_customers&'); ?>' + params, true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var customers = JSON.parse(xhr.responseText);
+                        updateCustomerTable(customers);
+                    } else {
+                        alert('Hubo un error al filtrar los clientes');
+                    }
+                };
+                xhr.send();
+            });
+
+            // Function to update the customer table with new data
+            function updateCustomerTable(customers) {
+                var tbody = document.querySelector('#data-table tbody');
+                tbody.innerHTML = ''; // Limpiar el contenido existente
+
+                customers.forEach(function(customer) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${customer.id}</td>
+                        <td>${customer.company_name}</td>
+                        <td>${customer.customer_name}</td>
+                        <td>${customer.email}</td>
+                        <td>${customer.phone_number}</td>
+                        <td>${customer.address}</td>
+                        <td>${customer.is_active ? 'Sí' : 'No'}</td>
+                        <td>${customer.package_name}</td>
+                        <td>
+                            <a href="<?php echo admin_url('admin-post.php?action=delete_customer&id='); ?>${customer.id}" class="btn btn-delete">Eliminar</a>
+                            <a href="#" class="update-customer-btn" data-id="${customer.id}">Editar</a>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
             }
+
+            // Función para obtener los datos de los clientes
+            function fetchCustomerData() {
+                return fetch('<?php echo admin_url('admin-ajax.php?action=get_customers_data'); ?>')
+                    .then(response => response.json());
+            }
+
+            // Crear el gráfico de Chart.js
+            function createChart(data) {
+                const ctx = document.getElementById('customersChart').getContext('2d');
+                const packageNames = [...new Set(data.map(customer => customer.package_name))];
+                const chartData = packageNames.map(package => {
+                    return data.filter(customer => customer.package_name === package).length;
+                });
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: packageNames,
+                        datasets: [{
+                            label: 'Número de Clientes por Tipo de Paquete',
+                            data: chartData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    // Configura el formato de los ticks del eje Y
+                                    callback: function(value) {
+                                        // Muestra solo números enteros
+                                        return Number.isInteger(value) ? value : '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Obtener los datos y crear el gráfico
+            fetchCustomerData().then(data => {
+                createChart(data);
+            });
         });
     </script>
 
 <?php
 }
 
-// Encolar scripts
-function sgc_customers_enqueue_scripts($hook)
+// Acción para obtener un cliente por ID
+add_action('wp_ajax_get_customer', 'get_customer');
+function get_customer()
 {
-    if ('toplevel_page_sgc-customers' !== $hook) {
-        return;
+    global $wpdb;
+
+    $customer_id = intval($_GET['customer_id']);
+    if ($customer_id <= 0) {
+        wp_send_json_error('Invalid customer ID');
+        wp_die();
     }
-    wp_enqueue_script('sgc-customers-js', plugin_dir_url(__FILE__) . 'admin.js', array('jquery'), null, true);
-    wp_enqueue_style('sgc-customers-css', plugin_dir_url(__FILE__) . 'customers.css');
+
+    // Consulta para obtener los datos del cliente
+    $query = $wpdb->prepare(
+        "SELECT c.*, p.package_name 
+         FROM wp_customers c 
+         LEFT JOIN wp_package_type p ON c.package_type_id = p.id 
+         WHERE c.id = %d",
+        $customer_id
+    );
+    $customer = $wpdb->get_row($query, ARRAY_A);
+
+    if ($customer) {
+        wp_send_json_success($customer);
+    } else {
+        wp_send_json_error('Customer not found');
+    }
+
+    wp_die();
 }
 
+// Acción para obtener clientes filtrados
+add_action('wp_ajax_filter_customers', 'filter_customers');
+function filter_customers()
+{
+    global $wpdb;
+
+    $date_start = $_GET['date-start'];
+    $date_end = $_GET['date-end'];
+    $company_name = $_GET['company_name'];
+    $customer_name = $_GET['customer_name'];
+    $is_active = $_GET['is_active'];
+
+    $query = "SELECT c.*, p.package_name FROM wp_customers c LEFT JOIN wp_package_type p ON c.package_type_id = p.id WHERE 1=1";
+
+    if ($date_start && $date_end) {
+        $query .= $wpdb->prepare(" AND c.created_at BETWEEN %s AND %s", $date_start, $date_end);
+    }
+
+    if ($company_name) {
+        $query .= $wpdb->prepare(" AND c.company_name LIKE %s", '%' . $wpdb->esc_like($company_name) . '%');
+    }
+
+    if ($customer_name) {
+        $query .= $wpdb->prepare(" AND c.customer_name LIKE %s", '%' . $wpdb->esc_like($customer_name) . '%');
+    }
+
+    if ($is_active !== '') {
+        $query .= $wpdb->prepare(" AND c.is_active = %d", $is_active);
+    }
+
+    $customers = $wpdb->get_results($query, ARRAY_A);
+
+    echo json_encode($customers);
+    wp_die();
+}
+
+// Función para obtener los datos de los clientes en formato JSON
+add_action('wp_ajax_get_customers_data', 'sgc_get_customers_data');
+function sgc_get_customers_data() {
+    global $wpdb;
+    $results = $wpdb->get_results("SELECT company_name, customer_name, package_name FROM wp_customers JOIN wp_package_type ON wp_customers.package_type_id = wp_package_type.id", ARRAY_A);
+    wp_send_json($results);
+}
+
+function sgc_customers_enqueue_scripts($hook_suffix) {
+    if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-customers') {
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
+        wp_enqueue_script('sgc-admin-js', plugins_url('admin.js', __FILE__), array('jquery', 'chart-js'), null, true);
+        wp_localize_script('sgc-admin-js', 'ajaxurl', admin_url('admin-ajax.php'));
+    }
+}
 add_action('admin_enqueue_scripts', 'sgc_customers_enqueue_scripts');
+?>
