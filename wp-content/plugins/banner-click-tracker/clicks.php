@@ -5,24 +5,30 @@ function sgc_get_clicks_data($date_start = null, $date_end = null, $device = nul
     global $wpdb;
     $table_name = $wpdb->prefix . 'clicks';
 
-    $query = "SELECT * FROM $table_name WHERE 1=1";
+    // Agregar INNER JOIN para obtener datos del banner
+    $query = "
+        SELECT c.*, b.banner_name
+        FROM $table_name c
+        LEFT JOIN {$wpdb->prefix}banners b ON c.banner_id = b.id
+        WHERE 1=1";
 
     if ($date_start) {
-        $query .= $wpdb->prepare(" AND click_time >= %s", $date_start);
+        $query .= $wpdb->prepare(" AND c.click_time >= %s", $date_start);
     }
     if ($date_end) {
-        $query .= $wpdb->prepare(" AND click_time <= %s", $date_end . ' 23:59:59');
+        $query .= $wpdb->prepare(" AND c.click_time <= %s", $date_end . ' 23:59:59');
     }
     if ($device) {
-        $query .= $wpdb->prepare(" AND device LIKE %s", '%' . $wpdb->esc_like($device) . '%');
+        $query .= $wpdb->prepare(" AND c.device LIKE %s", '%' . $wpdb->esc_like($device) . '%');
     }
     if ($browser) {
-        $query .= $wpdb->prepare(" AND browser LIKE %s", '%' . $wpdb->esc_like($browser) . '%');
+        $query .= $wpdb->prepare(" AND c.browser LIKE %s", '%' . $wpdb->esc_like($browser) . '%');
     }
 
     $results = $wpdb->get_results($query);
     return $results;
 }
+
 
 function sgc_clicks_page()
 {
@@ -90,6 +96,7 @@ function sgc_clicks_page()
                                     <th>Ciudad</th>
                                     <th>Navegador</th>
                                     <th>Fecha de clic</th>
+                                    <th>Banner</th> <!-- Asegúrate de que el encabezado coincide -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,10 +112,11 @@ function sgc_clicks_page()
                                         echo "<td>" . esc_html($click->city) . "</td>";
                                         echo "<td>" . esc_html($click->browser) . "</td>";
                                         echo "<td>" . esc_html($formatted_date) . "</td>"; // Display formatted date
+                                        echo "<td>" . esc_html($click->banner_name) . "</td>"; // Mostrar el nombre del banner
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo "<tr><td colspan='6'>No hay datos disponibles.</td></tr>";
+                                    echo "<tr><td colspan='7'>No hay datos disponibles.</td></tr>"; // Ajusta el colspan si agregas más columnas
                                 }
                                 ?>
                             </tbody>
@@ -124,70 +132,70 @@ function sgc_clicks_page()
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var clicksData = <?php echo json_encode($clicks_data); ?>;
+        document.addEventListener('DOMContentLoaded', function() {
+            var clicksData = <?php echo json_encode($clicks_data); ?>;
 
-    var ctx = document.getElementById('clicksChart').getContext('2d');
+            var ctx = document.getElementById('clicksChart').getContext('2d');
 
-    // Transformar los datos PHP a formato Chart.js
-    var transformedData = clicksData.reduce((acc, click) => {
-        var date = new Date(click.click_time).toISOString().split('T')[0]; // Usar solo la fecha (YYYY-MM-DD)
-        if (!acc[date]) {
-            acc[date] = 0;
-        }
-        acc[date]++;
-        return acc;
-    }, {});
+            // Transformar los datos PHP a formato Chart.js
+            var transformedData = clicksData.reduce((acc, click) => {
+                var date = new Date(click.click_time).toISOString().split('T')[0]; // Usar solo la fecha (YYYY-MM-DD)
+                if (!acc[date]) {
+                    acc[date] = 0;
+                }
+                acc[date]++;
+                return acc;
+            }, {});
 
-    var labels = Object.keys(transformedData);
-    var data = Object.values(transformedData);
+            var labels = Object.keys(transformedData);
+            var data = Object.values(transformedData);
 
-    var clicksChart = new Chart(ctx, {
-        type: 'line', 
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Número de Clics',
-                data: data,
-                backgroundColor: 'rgba(106, 90, 205, 0.5)',
-                borderColor: 'rgba(106, 90, 205, 1)',
-                borderWidth: 1,
-                pointRadius: 8 
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'Fecha: ' + context.label + ', Clics: ' + context.raw;
+            var clicksChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Clics',
+                        data: data,
+                        backgroundColor: 'rgba(106, 90, 205, 0.5)',
+                        borderColor: 'rgba(106, 90, 205, 1)',
+                        borderWidth: 1,
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Fecha: ' + context.label + ', Clics: ' + context.raw;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fecha'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Clics'
+                            }
                         }
                     }
                 }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Fecha'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Número de Clics'
-                    }
-                }
-            }
-        }
-    });
-});
-</script>
+            });
+        });
+    </script>
 
 
-    <?php
+<?php
 }
 
 function sgc_clicks_enqueue_scripts($hook_suffix)
