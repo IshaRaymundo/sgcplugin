@@ -1,32 +1,32 @@
-// js/click-script.js
-function registerClick(event, url, bannerId) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+    const banners = document.querySelectorAll('.sgc-banner a');
 
-    console.log('Click registered'); // Verificación
+    banners.forEach(function (banner) {
+        banner.addEventListener('click', function (e) {
+            e.preventDefault();
 
-    jQuery.ajax({
-        url: ajax_object.ajax_url,
-        type: 'POST',
-        data: {
-            action: 'register_click',
-            url: url,
-            banner_id: bannerId // Asegúrate de que esto se envía correctamente
-        },
-        success: function(response) {
-            if (response.success) {
-                console.log('AJAX request successful', response.data); // Verificación
-            } else {
-                console.log('AJAX request failed', response.data); // Verificación
-            }
-            window.location.href = url;
-        },
-        error: function(xhr, status, error) {
-            console.log('AJAX request failed', error); // Verificación
-            console.log('Response:', xhr.responseText); // Verificación
-        }
+            const bannerId = this.dataset.bannerId;
+            const bannerUrl = this.href;
+
+            fetch(sgc_clicks_tracker.ajax_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    action: 'register_click',
+                    banner_id: bannerId,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = bannerUrl;
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
     });
-}
-
-jQuery(document).ready(function($) {
-    console.log('Script loaded'); // Verificación
 });
