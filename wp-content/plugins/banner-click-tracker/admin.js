@@ -1,6 +1,6 @@
 jQuery(document).ready(function ($) {
     // Datos simulados para la gráfica y la tabla
-   
+
 
 
     // Inicializar la gráfica con los datos
@@ -52,44 +52,43 @@ jQuery(document).ready(function ($) {
         clicksChart.update();
     });
 });
-//modal para agregar banners
-document.addEventListener('DOMContentLoaded', function () {
-    var modal = document.getElementById("addBannerModal");
-    var btn = document.getElementById("addBannerButton");
-    var span = document.getElementsByClassName("close")[0];
+jQuery(document).ready(function ($) {
+    // Manejar el modal para agregar banners
+    var addModal = document.getElementById("addBannerModal");
+    var addBtn = document.getElementById("addBannerButton");
+    var addCloseBtn = addModal.querySelector(".close");
 
-    btn.onclick = function () {
-        modal.style.display = "block";
+    addBtn.onclick = function () {
+        addModal.style.display = "block";
     }
 
-    span.onclick = function () {
-        modal.style.display = "none";
+    addCloseBtn.onclick = function () {
+        addModal.style.display = "none";
     }
 
     window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+        if (event.target == addModal) {
+            addModal.style.display = "none";
         }
     }
-});
 
-// modal para editar banners
-document.addEventListener('DOMContentLoaded', function () {
-    var modal = document.getElementById("editBannerModal");
-    var span = document.getElementsByClassName("close")[0];
+    // Manejar el modal para editar banners
+    var editModal = document.getElementById("editBannerModal");
+    var editCloseBtn = editModal.querySelector(".close");
 
-    span.onclick = function () {
-        modal.style.display = "none";
+    editCloseBtn.onclick = function () {
+        editModal.style.display = "none";
     }
 
     window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+        if (event.target == editModal) {
+            editModal.style.display = "none";
         }
     }
 });
 
 function openEditBannerModal(bannerId) {
+    console.log("ID del banner a editar:", bannerId);
     // Realizar una petición AJAX para obtener los datos del banner
     jQuery.ajax({
         url: ajaxurl,
@@ -98,27 +97,36 @@ function openEditBannerModal(bannerId) {
             action: 'get_banner_details',
             banner_id: bannerId
         },
-        success: function(response) {
-            var banner = JSON.parse(response);
-            jQuery('#editBannerForm input[name="banner_id"]').val(banner.id);
-            jQuery('#editBannerForm input[name="banner_name"]').val(banner.banner_name);
-            jQuery('#editBannerForm input[name="banner_image"]').val(banner.banner_image);
-            jQuery('#editBannerForm input[name="banner_url"]').val(banner.banner_url);
-            jQuery('#editBannerForm input[name="location_on_site"]').val(banner.location_on_site);
-            jQuery('#editBannerForm select[name="page_id"]').val(banner.page_id);
-            jQuery('#editBannerForm select[name="bannerCustomer"]').val(banner.customer_id);
+        success: function (response) {
+            console.log("Respuesta AJAX:", response);
+            if (response.success) {
+                var banner = response.data;
+                jQuery('#editBannerForm input[name="banner_id"]').val(banner.id);
+                jQuery('#editBannerForm input[name="banner_name"]').val(banner.banner_name);
+                jQuery('#editBannerForm input[name="banner_image"]').val(banner.banner_image);
+                jQuery('#editBannerForm input[name="banner_url"]').val(banner.banner_url);
+                jQuery('#editBannerForm input[name="location_on_site"]').val(banner.location_on_site);
+                jQuery('#editBannerForm select[name="page_id"]').val(banner.page_id);
+                jQuery('#editBannerForm select[name="bannerCustomer"]').val(banner.customer_id);
 
-            document.getElementById("editBannerModal").style.display = "block";
+                document.getElementById("editBannerModal").style.display = "block";
+            } else {
+                alert('Error al obtener los datos del banner: ' + response.data);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log("Error AJAX:", error);
+            alert('Error en la petición AJAX: ' + error);
         }
     });
 }
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     var addCustomerForm = document.getElementById('add-customer-form');
-    addCustomerForm.addEventListener('submit', function(e) {
+    addCustomerForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
         var formData = new FormData(addCustomerForm);
@@ -173,14 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Agregar eventos de edición y eliminación
                 document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         var id = this.getAttribute('data-id');
                         // Mostrar modal de edición y cargar datos del cliente...
                     });
                 });
 
                 document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         var id = this.getAttribute('data-id');
                         if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
                             var formData = new FormData();

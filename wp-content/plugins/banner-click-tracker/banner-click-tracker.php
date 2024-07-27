@@ -171,8 +171,6 @@ function sgc_display_admin_page()
                             </tbody>
                         </table>
                     </section>
-
-
                 </main>
             </div>
         </div>
@@ -180,26 +178,34 @@ function sgc_display_admin_page()
     <div id="addBannerModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Agregar nuevo banner</h2>
+            <h2>Agregar banner</h2>
             <form id="addBannerForm" method="post" action="<?php echo admin_url('admin-post.php'); ?>">
                 <input type="hidden" name="action" value="add_banner">
+                <label for="add_banner_name">Nombre del banner:</label>
+                <input type="text" id="add_banner_name" name="banner_name">
 
-                <label for="banner_name">Nombre del banner:</label>
-                <input type="text" id="banner_name" name="banner_name">
+                <label for="add_banner_image">Imagen del banner (URL):</label>
+                <input type="text" id="add_banner_image" name="banner_image">
 
-                <label for="banner_image">Imagen del banner (URL):</label>
-                <input type="text" id="banner_image" name="banner_image">
+                <label for="add_banner_url">URL del banner:</label>
+                <input type="text" id="add_banner_url" name="banner_url">
 
-                <label for="banner_url">URL del banner:</label>
-                <input type="text" id="banner_url" name="banner_url">
+                <label for="add_location_on_site">Localización del banner:</label>
+                <input type="text" id="add_location_on_site" name="location_on_site">
 
-                <label for="location_on_site">Localización del banner:</label>
-                <input type="text" id="location_on_site" name="location_on_site">
-
-                <label for="bannerCustomer">Seleccionar Cliente:</label>
-                <select id="bannerCustomer" name="bannerCustomer">
+                <label for="add_page_id">Página:</label>
+                <select id="add_page_id" name="page_id">
                     <?php
-                    // Obtener clientes desde la base de datos
+                    $pages = get_pages();
+                    foreach ($pages as $page) {
+                        echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
+                    }
+                    ?>
+                </select>
+
+                <label for="add_bannerCustomer">Seleccionar Cliente:</label>
+                <select id="add_bannerCustomer" name="bannerCustomer">
+                    <?php
                     global $wpdb;
                     $customers = $wpdb->get_results("SELECT id, company_name FROM {$wpdb->prefix}customers", ARRAY_A);
                     foreach ($customers as $customer) {
@@ -208,18 +214,7 @@ function sgc_display_admin_page()
                     ?>
                 </select>
 
-                <label for="page_id">Seleccionar Página:</label>
-                <select id="page_id" name="page_id">
-                    <?php
-                    // Obtener páginas de WordPress
-                    $pages = get_pages();
-                    foreach ($pages as $page) {
-                        echo '<option value="' . esc_attr($page->ID) . '">' . esc_html($page->post_title) . '</option>';
-                    }
-                    ?>
-                </select>
-
-                <button type="submit">Agregar</button>
+                <button type="submit">Agregar banner</button>
             </form>
         </div>
     </div>
@@ -258,9 +253,9 @@ function sgc_display_admin_page()
                 <select id="bannerCustomer" name="bannerCustomer">
                     <?php
                     global $wpdb;
-                    $customers = $wpdb->get_results("SELECT id, customer_name FROM {$wpdb->prefix}customers", ARRAY_A);
+                    $customers = $wpdb->get_results("SELECT id, company_name FROM {$wpdb->prefix}customers", ARRAY_A);
                     foreach ($customers as $customer) {
-                        echo '<option value="' . esc_attr($customer['id']) . '">' . esc_html($customer['customer_name']) . '</option>';
+                        echo '<option value="' . esc_attr($customer['id']) . '">' . esc_html($customer['company_name']) . '</option>';
                     }
                     ?>
                 </select>
@@ -269,8 +264,6 @@ function sgc_display_admin_page()
             </form>
         </div>
     </div>
-
-
     <style>
         /* Incluye el CSS aquí o en un archivo separado */
         <?php include(plugin_dir_path(__FILE__) . 'styles.css'); ?>
@@ -811,6 +804,31 @@ function sgc_get_banners_with_details()
     return $results;
 }
 
+add_action('wp_ajax_get_banner_details', 'sgc_get_banner_details');
+
+function sgc_get_banner_details()
+{
+    if (!isset($_POST['banner_id'])) {
+        error_log('No se ha proporcionado el ID del banner');
+        wp_send_json_error('No se ha proporcionado el ID del banner');
+        return;
+    }
+
+    $banner_id = intval($_POST['banner_id']);
+    error_log('ID del banner recibido: ' . $banner_id);
+    $banner = sgc_get_banner($banner_id);
+
+    if ($banner) {
+        error_log('Datos del banner: ' . print_r($banner, true));
+        wp_send_json_success($banner);
+    } else {
+        error_log('No se ha encontrado el banner');
+        wp_send_json_error('No se ha encontrado el banner');
+    }
+}
+
+
+
 //Obtener los datos de un banner
 function sgc_get_banner($banner_id)
 {
@@ -818,7 +836,7 @@ function sgc_get_banner($banner_id)
     $table_banners = $wpdb->prefix . 'banners';
     $table_customers = $wpdb->prefix . 'customers';
     $table_banners_pages = $wpdb->prefix . 'banners_pages';
-    $table_customers_banners = $wpdb->prefix . 'customers_banners';
+    $table_customers_banners = $wpdb->prefix . 'customer_banners';
     $table_pages = $wpdb->prefix . 'posts';
 
     $query = "
@@ -829,7 +847,7 @@ function sgc_get_banner($banner_id)
             b.banner_url,
             b.location_on_site,
             b.total_clicks,
-            c.customer_name,
+            c.company_name,
             p.post_title AS page_name,
             p.ID AS page_id,
             c.id AS customer_id
@@ -841,7 +859,13 @@ function sgc_get_banner($banner_id)
         WHERE b.id = %d
     ";
 
-    return $wpdb->get_row($wpdb->prepare($query, $banner_id), ARRAY_A);
+    $result = $wpdb->get_row($wpdb->prepare($query, $banner_id), ARRAY_A);
+
+    // Agregar registro de depuración
+    error_log('Consulta SQL: ' . $wpdb->prepare($query, $banner_id));
+    error_log('Resultado de la consulta: ' . print_r($result, true));
+
+    return $result;
 }
 
 // Eliminar banner
@@ -980,15 +1004,19 @@ function sgc_get_pages()
 }
 
 
-//exportacion de excel
+// Exportación de Excel
 function export_to_excel()
 {
     if (!current_user_can('manage_options')) {
         return;
     }
 
+    if (!isset($_GET['table'])) {
+        wp_die('No se ha especificado una tabla.');
+    }
+
     global $wpdb;
-    $table_name = $wpdb->prefix . 'clicks';
+    $table_name = $wpdb->prefix . sanitize_text_field($_GET['table']);
     $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
 
     if (empty($results)) {
@@ -997,7 +1025,7 @@ function export_to_excel()
 
     // Establecer los encabezados para la descarga del archivo Excel
     header('Content-Type: application/vnd.ms-excel');
-    header('Content-Disposition: attachment;filename="report.xls"');
+    header('Content-Disposition: attachment;filename="' . str_replace('wp_', '', $table_name) . '_report.xls"');
     header('Cache-Control: max-age=0');
 
     // Crear el contenido del archivo Excel
@@ -1017,5 +1045,61 @@ function export_to_excel()
 }
 
 add_action('wp_ajax_export_to_excel', 'export_to_excel');
+
+
+// Exportar a PDF
+function export_to_pdf()
+{
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    if (!isset($_GET['table'])) {
+        wp_die('No se ha especificado una tabla.');
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . sanitize_text_field($_GET['table']);
+    $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+
+    if (empty($results)) {
+        wp_die('No hay datos para exportar.');
+    }
+
+    require_once(plugin_dir_path(__FILE__) . 'lib/tcpdf/tcpdf.php');
+
+    $pdf = new TCPDF();
+    $pdf->AddPage();
+
+    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->Cell(0, 10, 'Reporte de ' . str_replace('wp_', '', $table_name), 0, 1, 'C');
+
+    $pdf->SetFont('helvetica', '', 10);
+
+    $html = '<table border="1" cellpadding="4">';
+    $html .= '<thead><tr>';
+    foreach (array_keys($results[0]) as $header) {
+        $html .= '<th>' . $header . '</th>';
+    }
+    $html .= '</tr></thead>';
+
+    $html .= '<tbody>';
+    foreach ($results as $row) {
+        $html .= '<tr>';
+        foreach ($row as $cell) {
+            $html .= '<td>' . $cell . '</td>';
+        }
+        $html .= '</tr>';
+    }
+    $html .= '</tbody></table>';
+
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    $file_name = str_replace('wp_', '', $table_name) . '_report.pdf';
+    $pdf->Output($file_name, 'D');
+    exit;
+}
+add_action('wp_ajax_export_to_pdf', 'export_to_pdf');
+
 
 ?>
