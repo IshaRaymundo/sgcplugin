@@ -314,6 +314,9 @@ function register_click_shortcode()
 add_action('init', 'register_click_shortcode');
 
 // Función para el shortcode de banner_click
+// Incluir la biblioteca de detección del navegador
+require_once(plugin_dir_path(__FILE__) . 'lib/Browser.php/src/Browser.php'); // Ajusta esta ruta según la ubicación de la biblioteca
+
 function sgc_register_click()
 {
     if (!isset($_POST['banner_id'])) {
@@ -327,7 +330,10 @@ function sgc_register_click()
     $ip_address = $_SERVER['REMOTE_ADDR'];
     $city = ''; // Puedes usar una API para obtener la ciudad si es necesario
     $device = $_SERVER['HTTP_USER_AGENT'];
-    $browser = ''; // Puedes usar una función para detectar el navegador si es necesario
+
+    // Utilizar la biblioteca de detección del navegador
+    $browserObj = new Browser();
+    $browser = $browserObj->getBrowser();
 
     // Inserta el clic en la tabla wp_clicks
     $result = $wpdb->insert(
@@ -364,9 +370,6 @@ function sgc_register_click()
 }
 add_action('wp_ajax_register_click', 'sgc_register_click');
 add_action('wp_ajax_nopriv_register_click', 'sgc_register_click');
-
-
-
 
 
 // Crear la tabla en la base de datos al activar el plugin

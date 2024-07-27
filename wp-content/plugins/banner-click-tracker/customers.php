@@ -81,9 +81,10 @@ function sgc_customers_page()
                             <tbody>
                                 <?php
                                 $customers = sgc_get_customers();
+                                $counter = 1;
                                 foreach ($customers as $customer) {
                                     echo "<tr>
-                                        <td>{$customer['id']}</td>
+                                        <td>{$counter}</td>
                                         <td>{$customer['company_name']}</td>
                                         <td>{$customer['customer_name']}</td>
                                         <td>{$customer['email']}</td>
@@ -96,6 +97,7 @@ function sgc_customers_page()
                                             <a href='#' class='update-customer-btn' data-id='{$customer['id']}'>Editar</a>
                                         </td>
                                     </tr>";
+                                    $counter++;
                                 }
                                 ?>
                             </tbody>
