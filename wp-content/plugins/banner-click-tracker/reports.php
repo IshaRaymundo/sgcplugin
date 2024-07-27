@@ -6,8 +6,20 @@ function sgc_reports_page()
     <div class="wrap">
         <div id="sgc-reports">
             <div class="container">
-                <header class="header">
-                    <h1 id="report-title">Reporte de </h1>
+            <header class="header">
+                <div class="logo">
+                        <img src="<?php echo plugins_url('img/logo-sgc.png', __FILE__); ?>" alt="Logo">
+                        </div>
+                        <h1>Gestión de Clicks</h1>
+                    <nav class="nav-bar">
+                        <ul>
+                            <li><a href="admin.php?page=sgc-home">Inicio</a></li>
+                            <li><a href="admin.php?page=sgc-plugin">Banners</a></li>
+                            <li><a href="admin.php?page=sgc-clicks">Clicks</a></li>
+                            <li><a href="admin.php?page=sgc-customers">Clientes</a></li>
+                            <li><a href="admin.php?page=sgc-reports">Reportes</a></li>
+                        </ul>
+                    </nav>
                 </header>
                 <div class="buttons">
                     <select id="table-select">

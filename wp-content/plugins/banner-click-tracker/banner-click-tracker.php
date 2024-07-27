@@ -89,8 +89,9 @@ function sgc_display_admin_page()
             <div class="container">
                 <header class="header">
                     <div class="logo">
-                        <h1>Gestión de Banners</h1>
+                        <img src="<?php echo plugins_url('img/logo-sgc.png', __FILE__); ?>" alt="Logo">
                     </div>
+                    <h1>Gestión de Clicks</h1>
                     <nav class="nav-bar">
                         <ul>
                             <li><a href="admin.php?page=sgc-home">Inicio</a></li>
