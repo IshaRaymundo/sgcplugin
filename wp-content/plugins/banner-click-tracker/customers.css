@@ -282,9 +282,11 @@ form button:hover {
 }
 
 #activityChart, #packageChart {
-    width: 45%;
-    height: 300px;
+    display: block;
+    width: 100%;
+    height: 400px; /* Ajusta la altura según sea necesario */
 }
+
 
 @media (max-width: 768px) {
     #activityChart, #packageChart {
