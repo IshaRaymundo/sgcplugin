@@ -134,7 +134,7 @@ function sgc_display_admin_page()
                         <table id="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Código de banner</th>
                                     <th>Nombre del banner</th>
                                     <th>Imagen</th>
                                     <th>URL</th>
@@ -279,19 +279,23 @@ function sgc_display_admin_page()
 }
 
 // Enqueue scripts para la página de administración principal y las páginas de clicks, clientes y reportes
-function sgc_enqueue_scripts($hook_suffix)
+function sgc_enqueue_admin_scripts($hook_suffix)
 {
     if ($hook_suffix == 'toplevel_page_sgc-plugin' || $hook_suffix == 'sgc-plugin_page_sgc-clicks' || $hook_suffix == 'sgc-plugin_page_sgc-customers' || $hook_suffix == 'sgc-plugin_page_sgc-reports' || $hook_suffix == 'sgc-create-banner') {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), null, true);
         wp_enqueue_script('sgc-admin-js', plugins_url('admin.js', __FILE__), array('jquery', 'chart-js'), null, true);
     }
-
-    // Enqueue the click script for the front-end
-    wp_enqueue_script('click-script', plugins_url('js/click-script.js', __FILE__), array('jquery'), null, true);
-    wp_localize_script('click-script', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
 }
-add_action('admin_enqueue_scripts', 'sgc_enqueue_scripts');
-add_action('wp_enqueue_scripts', 'sgc_enqueue_scripts'); // Add this line to ensure the script is enqueued on the front-end
+add_action('admin_enqueue_scripts', 'sgc_enqueue_admin_scripts');
+
+// Enqueue the click script for the front-end
+function sgc_enqueue_frontend_scripts()
+{
+    wp_enqueue_script('click-script', plugins_url('js/click-script.js', __FILE__), array('jquery'), null, true);
+    wp_localize_script('click-script', 'sgc_clicks_tracker', array('ajax_url' => admin_url('admin-ajax.php')));
+}
+add_action('wp_enqueue_scripts', 'sgc_enqueue_frontend_scripts');
+
 
 
 
@@ -310,116 +314,58 @@ function register_click_shortcode()
 add_action('init', 'register_click_shortcode');
 
 // Función para el shortcode de banner_click
-function banner_click_function($atts)
+function sgc_register_click()
 {
+    if (!isset($_POST['banner_id'])) {
+        wp_send_json_error('Missing banner ID');
+    }
+
     global $wpdb;
-
-    $atts = shortcode_atts(
-        array(
-            'id' => '', // ID del banner
-        ),
-        $atts,
-        'banner_click'
-    );
-
-    if (empty($atts['id'])) {
-        return 'ID del banner no especificado.';
-    }
-
-    $banner_id = intval($atts['id']);
-    $table_name = $wpdb->prefix . 'banners';
-
-    // Obtener los datos del banner desde la base de datos
-    $banner = $wpdb->get_row($wpdb->prepare("
-        SELECT * FROM $table_name WHERE id = %d
-    ", $banner_id), ARRAY_A);
-
-    if (!$banner) {
-        return 'Banner no encontrado.';
-    }
-
-    // Devolver el HTML del banner
-    return '<a href="' . esc_url($banner['banner_url']) . '" onclick="registerClick(event, \'' . esc_url($banner['banner_url']) . '\', ' . esc_attr($banner_id) . ')">
-                <img src="' . esc_url($banner['banner_image']) . '" alt="' . esc_attr($banner['banner_name']) . '">
-            </a>';
-}
-add_shortcode('banner_click', 'banner_click_function');
-
-
-
-// Manejar la solicitud AJAX
-function handle_click_ajax()
-{
-    global $wpdb;
-
-    $table_clicks = $wpdb->prefix . 'clicks';
-    $table_banners = $wpdb->prefix . 'banners';
-
-    // Asegúrate de que todos los parámetros necesarios estén presentes
-    if (empty($_POST['url']) || empty($_POST['banner_id'])) {
-        error_log('Missing parameters: ' . print_r($_POST, true));
-        wp_send_json_error(array('message' => 'Faltan parámetros.'));
-        wp_die();
-    }
-
     $banner_id = intval($_POST['banner_id']);
+
+    // Obtén la información del clic
     $ip_address = $_SERVER['REMOTE_ADDR'];
-
-    // Usar la API de geolocalización para obtener la ciudad
-    $api_key = '7f5c5fb09a4e42';
-    $response = wp_remote_get("http://ipinfo.io/{$ip_address}/json?token={$api_key}");
-
-    if (is_wp_error($response)) {
-        $city = 'Unknown';
-        error_log('Error fetching IP info: ' . $response->get_error_message());
-    } else {
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-        $city = isset($data['city']) ? $data['city'] : 'Unknown';
-    }
-
+    $city = ''; // Puedes usar una API para obtener la ciudad si es necesario
     $device = $_SERVER['HTTP_USER_AGENT'];
-    $browser = '';
-    if (class_exists('Mobile_Detect')) {
-        $agent = new Mobile_Detect();
-        $agent->setUserAgent($device);
-        $browser = $agent->browser();
-    }
+    $browser = ''; // Puedes usar una función para detectar el navegador si es necesario
 
-    $data = array(
-        'ip_address' => $ip_address,
-        'city' => $city,
-        'device' => $device,
-        'browser' => $browser,
-        'click_time' => current_time('mysql'),
-        'banner_id' => $banner_id, // Guardar el ID del banner
+    // Inserta el clic en la tabla wp_clicks
+    $result = $wpdb->insert(
+        $wpdb->prefix . 'clicks',
+        array(
+            'banner_id' => $banner_id,
+            'ip_address' => $ip_address,
+            'city' => $city,
+            'device' => $device,
+            'browser' => $browser,
+        ),
+        array(
+            '%d',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+        )
     );
 
-    // Registra los datos en el log para depuración
-    error_log('Data to insert: ' . print_r($data, true));
+    if ($result !== false) {
+        // Actualiza el conteo de clics en la tabla wp_banners
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE {$wpdb->prefix}banners SET total_clicks = total_clicks + 1 WHERE id = %d",
+                $banner_id
+            )
+        );
 
-    // Insertar el clic en la base de datos
-    $result = $wpdb->insert($table_clicks, $data);
-
-    if ($result === false) {
-        error_log('Error inserting data: ' . $wpdb->last_error);
-        wp_send_json_error(array('message' => 'Error inserting data: ' . $wpdb->last_error));
+        wp_send_json_success();
     } else {
-        // Incrementar el contador de clics en la tabla de banners
-        $wpdb->query($wpdb->prepare("
-            UPDATE $table_banners
-            SET total_clicks = total_clicks + 1
-            WHERE id = %d
-        ", $banner_id));
-
-        error_log('Data inserted successfully');
-        wp_send_json_success(array('message' => 'Data inserted successfully'));
+        wp_send_json_error('Failed to register click');
     }
-
-    wp_die();
 }
-add_action('wp_ajax_nopriv_register_click', 'handle_click_ajax');
-add_action('wp_ajax_register_click', 'handle_click_ajax');
+add_action('wp_ajax_register_click', 'sgc_register_click');
+add_action('wp_ajax_nopriv_register_click', 'sgc_register_click');
+
+
 
 
 
@@ -433,6 +379,7 @@ function create_clicks_table()
 
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
+        banner_id mediumint(9) NOT NULL,
         ip_address varchar(100) NOT NULL,
         city varchar(100),
         device text NOT NULL,
@@ -445,6 +392,7 @@ function create_clicks_table()
     dbDelta($sql);
 }
 register_activation_hook(__FILE__, 'create_clicks_table');
+
 
 // Crear las tablas en la base de datos al activar el plugin
 function create_package_type_table()
@@ -787,7 +735,7 @@ function sgc_add_banner()
 add_action('admin_post_add_banner', 'sgc_add_banner');
 
 
-//Mostrar banners shortcode
+// Mostrar banners shortcode
 function sgc_display_banners($atts)
 {
     global $wpdb;
@@ -818,7 +766,7 @@ function sgc_display_banners($atts)
     foreach ($banners as $banner) {
         $output .= '<div class="sgc-banner">';
         $output .= '<h3>' . esc_html($banner['banner_name']) . '</h3>';
-        $output .= '<a href="' . esc_url($banner['banner_url']) . '" target="_blank">';
+        $output .= '<a href="' . esc_url($banner['banner_url']) . '" data-banner-id="' . esc_attr($banner['id']) . '" target="_blank">';
         $output .= '<img src="' . esc_url($banner['banner_image']) . '" alt="' . esc_html($banner['banner_name']) . '" style="max-width: 100px;">';
         $output .= '</a>';
         $output .= '<p>' . esc_html($banner['location_on_site']) . '</p>';
@@ -829,6 +777,7 @@ function sgc_display_banners($atts)
     return $output;
 }
 add_shortcode('sgc_banners', 'sgc_display_banners');
+
 
 // Obtener datos de los banners
 function sgc_get_banners_with_details()
