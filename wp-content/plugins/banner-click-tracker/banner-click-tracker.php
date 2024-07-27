@@ -1069,4 +1069,51 @@ function export_to_excel()
 
 add_action('wp_ajax_export_to_excel', 'export_to_excel');
 
+// Exportar a PDF
+function export_to_pdf() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'clicks';
+    $results = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+
+    if (empty($results)) {
+        wp_die('No hay datos para exportar.');
+    }
+
+    require_once(plugin_dir_path(__FILE__) . 'lib/tcpdf/tcpdf.php');
+
+    $pdf = new TCPDF();
+    $pdf->AddPage();
+
+    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->Cell(0, 10, 'Reporte de Clicks', 0, 1, 'C');
+
+    $pdf->SetFont('helvetica', '', 10);
+
+    $html = '<table border="1" cellpadding="4">';
+    $html .= '<thead><tr>';
+    foreach (array_keys($results[0]) as $header) {
+        $html .= '<th>' . $header . '</th>';
+    }
+    $html .= '</tr></thead>';
+
+    $html .= '<tbody>';
+    foreach ($results as $row) {
+        $html .= '<tr>';
+        foreach ($row as $cell) {
+            $html .= '<td>' . $cell . '</td>';
+        }
+        $html .= '</tr>';
+    }
+    $html .= '</tbody></table>';
+
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    $pdf->Output('report.pdf', 'D');
+    exit;
+}
+add_action('wp_ajax_export_to_pdf', 'export_to_pdf');
 ?>

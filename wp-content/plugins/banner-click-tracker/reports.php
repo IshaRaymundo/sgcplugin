@@ -11,7 +11,7 @@ function sgc_reports_page() {
                 <div class="buttons">
                     <button class="filter-btn">Filtrar</button>
                     <button class="excel-btn" id="export-excel-btn">Excel</button>
-                    <button class="pdf-btn">PDF</button>
+                    <button class="pdf-btn" id="export-pdf-btn">PDF</button>
                     <button class="whatsapp-btn">WhatsApp</button>
                     <button class="email-btn">Correo</button>
                     <button class="back-btn" onclick="window.location.href='admin.php?page=sgc-home'">Regresar</button>
@@ -44,6 +44,10 @@ function sgc_reports_page() {
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('export-excel-btn').addEventListener('click', function() {
                 window.location.href = ajaxurl + '?action=export_to_excel';
+            });
+
+            document.getElementById('export-pdf-btn').addEventListener('click', function() {
+                window.location.href = ajaxurl + '?action=export_to_pdf';
             });
         });
     </script>
