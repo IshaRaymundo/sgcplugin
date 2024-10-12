@@ -22,6 +22,7 @@ if (file_exists(plugin_dir_path(__FILE__) . 'vendor/autoload.php')) {
 
 use Jenssegers\Agent\Agent;
 
+
 // Registrar el menú de administración
 function sgc_register_menu_page()
 {
@@ -89,6 +90,7 @@ function sgc_display_admin_page()
     $company_name = isset($_POST['company_name']) ? $_POST['company_name'] : '';
 
     // Construir la consulta con los filtros
+    
     $query = "SELECT banners.*, customers.company_name, pages.post_title AS page_name
               FROM {$wpdb->prefix}banners AS banners
               LEFT JOIN {$wpdb->prefix}customer_banners AS customer_banners ON banners.id = customer_banners.banner_id
@@ -115,6 +117,20 @@ function sgc_display_admin_page()
 
     $banners = $wpdb->get_results($query, ARRAY_A);
 
+    ?>
+   <?php
+global $wpdb;
+$table_name = $wpdb->prefix . 'banners';
+
+
+
+// Realizar la consulta a la base de datos
+$clicks_data = $wpdb->get_results("SELECT banner_name, total_clicks FROM $table_name", ARRAY_A);
+
+// Verificar si los datos están siendo obtenidos
+
+
+// Convertir los datos a JSON para JavaScript
 ?>
     <div class="wrap">
         <div id="sgc-dashboard">
@@ -122,6 +138,7 @@ function sgc_display_admin_page()
                 <header class="header">
                     <div class="logo">
                         <h1>Gestión de Banners</h1>
+                        
                     </div>
                     <nav class="nav-bar">
                         <ul>
@@ -139,7 +156,7 @@ function sgc_display_admin_page()
                             <h2>Seguimiento de banners</h2>
                             <p>Obtén informes detallados sobre el seguimiento de banners por medio de gráficos.</p>
                             <div id="chart">
-                                <canvas id="packageChart"></canvas>
+                                <canvas id="myBannerChart" width="856" height="428" style="display: block; box-sizing: border-box; height: 214px; width: 428px;">></canvas>
                             </div>
                         </section>
                         <aside class="filter-container">
@@ -299,6 +316,49 @@ function sgc_display_admin_page()
         /* Incluye el CSS aquí o en un archivo separado */
         <?php include(plugin_dir_path(__FILE__) . 'styles.css'); ?>
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aquí los datos ya están organizados desde PHP
+    var clicksData = <?php echo json_encode($clicks_data); ?>;
+    console.log(clicksData);
+    
+    // Accedemos directamente a las columnas ya procesadas
+    var ctx7 = document.getElementById('myBannerChart').getContext('2d');
+    
+    var myBannerChart = new Chart(ctx7, {
+        type: 'bar',
+        data: { 
+            labels: clicksData.map(click => click.banner_name), // Nombres de banners desde PHP
+            datasets: [{
+                label: 'Seguimiento de clicks por cliente',
+                data: clicksData.map(click => click.total_clicks), // Clics totales extraídos directamente
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgb(153, 102, 255)',
+                    'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+});
+</script>
 <?php
 }
 

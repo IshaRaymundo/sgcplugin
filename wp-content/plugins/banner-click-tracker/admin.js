@@ -3,28 +3,28 @@ jQuery(document).ready(function ($) {
 
 
 
-    // Inicializar la gráfica con los datos
-    var ctx = document.getElementById('').getContext('2d');
-    var clicksChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: clickData.map(function (row) { return row.banner; }),
-            datasets: [{
-                label: 'Clics',
-                data: clickData.map(function (row) { return row.clics; }),
-                backgroundColor: 'rgba(106, 90, 205, 0.5)',
-                borderColor: 'rgba(106, 90, 205, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    // Inicializar la gráfica con los datos (grafica real en clicks.php)
+    // var ctx = document.getElementById('').getContext('2d');
+    // var clicksChart = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: {
+    //         labels: clickData.map(function (row) { return row.banner; }),
+    //         datasets: [{
+    //             label: 'Clics',
+    //             data: clickData.map(function (row) { return row.clics; }),
+    //             backgroundColor: 'rgba(106, 90, 205, 0.5)',
+    //             borderColor: 'rgba(106, 90, 205, 1)',
+    //             borderWidth: 1
+    //         }]
+    //     },
+    //     options: {
+    //         scales: {
+    //             y: {
+    //                 beginAtZero: true
+    //             }
+    //         }
+    //     }
+    // });
 
     // Manejar el filtrado de datos
     $('#filters').submit(function (event) {

@@ -170,6 +170,10 @@ form button:hover {
     max-width: 100%;
     height: auto;
 }
+#myBannerChart {
+    max-width: 100%;
+    height: auto;
+}
 
 table {
     border-collapse: separate;
